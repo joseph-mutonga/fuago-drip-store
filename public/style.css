@@ -1,0 +1,202 @@
+/* ---------- GLOBAL STYLES ---------- */
+body {
+  font-family: Arial, sans-serif;
+  background: #f2f2f2;
+  margin: 0;
+  padding: 0;
+}
+
+header {
+  background-color: #232f3e;
+  color: white;
+  padding: 15px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.upload-link {
+  background-color: #febd69;
+  color: black;
+  text-decoration: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  font-weight: bold;
+}
+
+.upload-link:hover {
+  background-color: #f3a847;
+}
+
+main {
+  padding: 20px;
+}
+
+/* ---------- PRODUCT GRID ---------- */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 20px;
+}
+
+.product-card {
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  padding: 15px;
+  text-align: center;
+}
+
+.product-card img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.product-card h3 {
+  margin: 10px 0 5px;
+  font-size: 18px;
+}
+
+.price {
+  color: #B12704;
+  font-weight: bold;
+  margin: 5px 0;
+}
+
+.desc {
+  font-size: 14px;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.qty {
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 10px;
+}
+
+.buttons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.edit-btn {
+  background-color: #ffa41c;
+  border: none;
+  padding: 6px 10px;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.delete-btn {
+  background-color: #d32f2f;
+  border: none;
+  padding: 6px 10px;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.edit-btn:hover { background-color: #ff8f00; }
+.delete-btn:hover { background-color: #b71c1c; }
+
+/* ---------- UPLOAD PAGE ---------- */
+.upload-container {
+  max-width: 400px;
+  margin: 50px auto;
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+.upload-container input,
+.upload-container textarea {
+  width: 90%;
+  margin-bottom: 10px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.upload-container button {
+  background-color: #ffa41c;
+  border: none;
+  padding: 10px 15px;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.upload-container .back-btn {
+  display: inline-block;
+  margin-top: 15px;
+  text-decoration: none;
+  color: #232f3e;
+}
+
+/* ---------- EDIT PAGE ---------- */
+.edit-container {
+  max-width: 450px;
+  margin: 60px auto;
+  background: white;
+  padding: 25px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.edit-container h2 {
+  text-align: center;
+  color: #232f3e;
+  margin-bottom: 20px;
+}
+
+.edit-container form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.edit-container input,
+.edit-container textarea {
+  width: 90%;
+  margin-bottom: 12px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.edit-container button {
+  width: 95%;
+  background-color: #ffa41c;
+  border: none;
+  padding: 10px 15px;
+  color: white;
+  font-weight: bold;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.edit-container button:hover {
+  background-color: #ff8f00;
+}
+
+.edit-container .cancel-btn {
+  background-color: #ccc;
+  color: #232f3e;
+}
+
+.edit-container .cancel-btn:hover {
+  background-color: #999;
+}

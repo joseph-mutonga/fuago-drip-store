@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Cart</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f8f9fb;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background-color: #232f3e;
+      color: white;
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    header h1 { margin: 0; font-size: 22px; }
+    button, .back-btn {
+      background: #febd69;
+      border: none;
+      color: black;
+      padding: 8px 12px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .cart-container {
+      padding: 20px;
+      max-width: 800px;
+      margin: 30px auto;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .cart-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
+    }
+    .cart-item img {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+    .cart-details { flex: 1; margin-left: 15px; }
+    .cart-details h3 { margin: 0; font-size: 16px; }
+    .cart-details p { margin: 5px 0; color: #555; }
+    .total { text-align: right; font-size: 18px; font-weight: bold; margin-top: 15px; }
+    .empty { text-align: center; padding: 50px; font-size: 18px; color: #555; }
+    .remove-btn {
+      background: #e63946;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 8px 10px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .remove-btn:hover { background: #c53030; }
+    .checkout-section { margin-top: 20px; text-align: right; }
+    .checkout-btn {
+      background: #232f3e;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 10px 15px;
+      cursor: pointer;
+      margin-top: 10px;
+      font-weight: 600;
+    }
+    .checkout-btn:hover { background: #febd69; color: #000; }
+    .payment-methods { margin-top: 15px; text-align: right; }
+    .payment-methods label { margin-right: 10px; font-weight: 600; }
+
+/* -------------------- Responsive Design -------------------- */
+
+/* Tablets */
+@media screen and (max-width: 768px) {
+  body {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    flex-direction: row;
+    overflow-x: auto;
+  }
+
+  .main {
+    padding: 10px;
+  }
+
+  .product-grid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  }
+}
+
+/* Phones */
+@media screen and (max-width: 480px) {
+  .sidebar button {
+    font-size: 14px;
+    padding: 8px;
+  }
+
+  .product-card img {
+    height: 120px;
+  }
+
+  form input, form textarea, form button {
+    padding: 8px;
+    font-size: 14px;
+  }
+}
+
+
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🛒 My Cart</h1>
+    <div>
+      <a href="user-dashboard.html" class="back-btn">← Back</a>
+      <button onclick="logout()">Logout</button>
+    </div>
+  </header>
+
+  <div class="cart-container" id="cartContainer">
+    <p class="empty">Loading your cart...</p>
+  </div>
+
+  <script>
+    const token = localStorage.getItem("token");
+    let currentCartItems = []; // Global cart array
+
+    async function loadCart() {
+      if (!token) {
+        window.location.href = "login.html";
+        return;
+      }
+
+      const res = await fetch("/user/cart", {
+        headers: { "Authorization": `Bearer ${token}` }
+      });
+
+      const container = document.getElementById("cartContainer");
+      container.innerHTML = "";
+
+      if (!res.ok) {
+        container.innerHTML = "<p class='empty'>Failed to load cart.</p>";
+        return;
+      }
+
+      const items = await res.json();
+      currentCartItems = items;
+
+      if (items.length === 0) {
+        container.innerHTML = '<p class="empty">Your cart is empty.</p>';
+        localStorage.setItem("cartCount", "0");
+        return;
+      }
+
+      let total = 0;
+      items.forEach(item => {
+        total += item.price * item.quantity;
+
+        const div = document.createElement("div");
+        div.className = "cart-item";
+        div.innerHTML = `
+          <img src="${item.image}" alt="${item.name}">
+          <div class="cart-details">
+            <h3>${item.name}</h3>
+            <p>Ksh ${item.price} × ${item.quantity}</p>
+          </div>
+          <button class="remove-btn" onclick="removeItem(${item.id})">Remove</button>
+        `;
+        container.appendChild(div);
+      });
+
+      const totalDiv = document.createElement("div");
+      totalDiv.className = "total";
+      totalDiv.innerHTML = `Total: Ksh ${total.toLocaleString()}`;
+      container.appendChild(totalDiv);
+
+      // Payment section
+      const checkoutSection = document.createElement("div");
+      checkoutSection.className = "checkout-section";
+      checkoutSection.innerHTML = `
+        <div class="payment-methods">
+          <label><input type="radio" name="payment" value="Mpesa" checked> Mpesa</label>
+          <label><input type="radio" name="payment" value="Card"> Card</label>
+          <label><input type="radio" name="payment" value="Cash"> Cash</label>
+        </div>
+        <button class="checkout-btn" onclick="checkout()">Pay Now</button>
+      `;
+      container.appendChild(checkoutSection);
+    }
+
+    async function checkout() {
+      if (!currentCartItems || currentCartItems.length === 0) return alert("Cart is empty!");
+
+      const paymentMethod = document.querySelector('input[name="payment"]:checked')?.value;
+      if (!paymentMethod) return alert("Select a payment method.");
+
+      const res = await fetch("/user/checkout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({ cart: currentCartItems, paymentMethod })
+      });
+
+      if (res.ok) {
+        alert("Payment successful! Thank you for your purchase.");
+        // Clear cart visually and update badge
+        document.getElementById("cartContainer").innerHTML = '<p class="empty">Your cart is empty.</p>';
+        localStorage.setItem("cartCount", "0");
+      } else {
+        const err = await res.json();
+        alert("Payment failed: " + (err.error || "Try again"));
+      }
+    }
+
+    async function removeItem(cartId) {
+      if (!token) return;
+      const res = await fetch(`/user/cart/${cartId}`, {
+        method: "DELETE",
+        headers: { "Authorization": `Bearer ${token}` }
+      });
+      if (res.ok) await loadCart();
+    }
+
+    function logout() {
+      localStorage.clear();
+      window.location.href = "login.html";
+    }
+
+    // Load cart on page load
+    loadCart();
+  </script>
+</body>
+</html>

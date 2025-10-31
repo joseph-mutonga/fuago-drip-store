@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Edit Product - Admin</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+     
+
+    body {
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: #f4f6f8;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .edit-container {
+      background: #fff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      width: 400px;
+      max-width: 90%;
+    }
+
+    h2 {
+      text-align: center;
+      color: #232f3e;
+    }
+
+    form input, form textarea, form button {
+      width: 100%;
+      margin: 10px 0;
+      padding: 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      font-size: 15px;
+    }
+
+    form button {
+      background: #ffa41c;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+    }
+
+    .preview {
+      text-align: center;
+      margin: 10px 0;
+    }
+
+    .preview img {
+      max-width: 150px;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+    }
+
+    .actions {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 10px;
+    }
+
+    .back-btn {
+      background: #232f3e;
+      color: #fff;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .logout-btn {
+      background: #e63946;
+      color: #fff;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+/* -------------------- Responsive Design -------------------- */
+
+/* Tablets */
+@media screen and (max-width: 768px) {
+  body {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    flex-direction: row;
+    overflow-x: auto;
+  }
+
+  .main {
+    padding: 10px;
+  }
+
+  .product-grid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  }
+}
+
+/* Phones */
+@media screen and (max-width: 480px) {
+  .sidebar button {
+    font-size: 14px;
+    padding: 8px;
+  }
+
+  .product-card img {
+    height: 120px;
+  }
+
+  form input, form textarea, form button {
+    padding: 8px;
+    font-size: 14px;
+  }
+}
+
+
+  </style>
+</head>
+<body>
+  <div class="edit-container">
+    <h2>✏️ Edit Product</h2>
+    <form id="editForm" enctype="multipart/form-data">
+      <input type="text" id="name" name="name" placeholder="Product Name" required />
+      <textarea id="description" name="description" placeholder="Description" required></textarea>
+      <input type="number" id="price" name="price" placeholder="Price (Ksh)" required />
+      <input type="number" id="quantity" name="quantity" placeholder="Quantity" required />
+
+      <div class="preview" id="imagePreview"></div>
+
+      <input type="file" id="image" name="image" accept="image/*" />
+      <button type="submit">Update Product</button>
+    </form>
+
+    <div class="actions">
+      <button class="back-btn" onclick="goBack()">← Back to Dashboard</button>
+      <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+  </div>
+
+  <script>
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("Please log in as admin first.");
+      window.location.href = "login.html";
+    }
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const productId = urlParams.get("id");
+
+    if (!productId) {
+      alert("No product ID provided!");
+      window.location.href = "upload.html";
+    }
+
+    // Load product info
+    async function loadProduct() {
+      const res = await fetch(`/product/${productId}`);
+      if (!res.ok) {
+        alert("❌ Failed to load product.");
+        return;
+      }
+
+      const p = await res.json();
+      document.getElementById("name").value = p.name;
+      document.getElementById("description").value = p.description;
+      document.getElementById("price").value = p.price;
+      document.getElementById("quantity").value = p.quantity;
+
+      if (p.image) {
+        document.getElementById("imagePreview").innerHTML = `
+          <img src="${p.image}" alt="${p.name}">
+        `;
+      }
+    }
+
+    // Submit update
+    document.getElementById("editForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+
+      const res = await fetch(`/update/${productId}`, {
+        method: "POST",
+        headers: { "Authorization": `Bearer ${token}` },
+        body: formData
+      });
+
+      if (res.ok) {
+        alert("✅ Product updated successfully!");
+        window.location.href = "upload.html"; // Return to admin dashboard
+      } else {
+        alert("❌ Failed to update product.");
+      }
+    });
+
+    function goBack() {
+      window.location.href = "upload.html";
+    }
+
+    function logout() {
+      localStorage.removeItem("token");
+      alert("You have been logged out.");
+      window.location.href = "login.html";
+    }
+
+    loadProduct();
+  </script>
+</body>
+</html>

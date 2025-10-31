@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f2f2f2;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .login-container {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      text-align: center;
+      width: 320px;
+    }
+    input {
+      width: 90%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    button {
+      background-color: #ffa41c;
+      color: white;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+      width: 100%;
+    }
+    button:hover { background-color: #ff8f00; }
+    a {
+      text-decoration: none;
+      color: #232f3e;
+      display: block;
+      margin-top: 10px;
+      font-size: 14px;
+    }
+
+    /* -------------------- Responsive Design -------------------- */
+
+/* Tablets */
+@media screen and (max-width: 768px) {
+  body {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    flex-direction: row;
+    overflow-x: auto;
+  }
+
+  .main {
+    padding: 10px;
+  }
+
+  .product-grid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  }
+}
+
+/* Phones */
+@media screen and (max-width: 480px) {
+  .sidebar button {
+    font-size: 14px;
+    padding: 8px;
+  }
+
+  .product-card img {
+    height: 120px;
+  }
+
+  form input, form textarea, form button {
+    padding: 8px;
+    font-size: 14px;
+  }
+}
+
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <h2>🔐 Login</h2>
+    <form id="loginForm">
+      <input type="email" id="email" placeholder="Email" required />
+      <input type="password" id="password" placeholder="Password" required />
+      <button type="submit">Login</button>
+    </form>
+    <a href="register.html">Don't have an account? Register</a>
+  </div>
+
+  <script>
+    const form = document.getElementById("loginForm");
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value.trim();
+
+      try {
+        const res = await fetch("/auth/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password })
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          alert(data.error || "Login failed");
+          return;
+        }
+
+        // Save token, username, and role
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("username", data.username);
+        localStorage.setItem("role", data.role);
+
+        alert(`Welcome, ${data.username}!`);
+
+        // ✅ Redirect by role
+        if (data.role === "admin") {
+          window.location.href = "upload.html";  // changed from index.html
+        } else {
+          window.location.href = "user-dashboard.html";
+        }
+
+      } catch (err) {
+        console.error("Login error:", err);
+        alert("Server error. Please try again.");
+      }
+    });
+  </script>
+</body>
+</html>

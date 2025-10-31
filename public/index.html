@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Redirecting...</title>
+  <script>
+    // When the page loads, check for login info
+    document.addEventListener("DOMContentLoaded", () => {
+      const token = localStorage.getItem("token");
+      const role = localStorage.getItem("role");
+
+      // 🧩 If no token or role, send to login
+      if (!token || !role) {
+        window.location.href = "login.html";
+        return;
+      }
+
+      // 🔐 Redirect based on user role
+      if (role === "admin") {
+        window.location.href = "upload.html"; // Admin dashboard
+      } else if (role === "user") {
+        window.location.href = "user-dashboard.html"; // User dashboard
+      } else {
+        // Invalid or unknown role - force logout
+        localStorage.removeItem("token");
+        localStorage.removeItem("role");
+        window.location.href = "login.html";
+      }
+    });
+  </script>
+</head>
+<body style="font-family: Arial, sans-serif; background: #f8f9fb; display: flex; align-items: center; justify-content: center; height: 100vh;">
+  <h2>Loading, please wait...</h2>
+</body>
+</html>

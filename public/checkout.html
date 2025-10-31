@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout</title>
+  <style>
+    :root {
+      --accent: #ffa41c;
+      --bg: #f8f9fb;
+      --card: #fff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --shadow: 0 3px 10px rgba(0,0,0,0.08);
+      --radius: 10px;
+    }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    header {
+      background: #232f3e;
+      color: #fff;
+      display:flex;
+      justify-content: space-between;
+      align-items:center;
+      padding:12px 20px;
+    }
+    header h1 { margin:0; font-size:20px; }
+    .btn {
+      background: var(--accent);
+      border:none;
+      border-radius:8px;
+      padding:8px 12px;
+      cursor:pointer;
+      font-weight:600;
+    }
+    main { padding:20px; }
+    table {
+      width:100%;
+      border-collapse: collapse;
+      margin-bottom:20px;
+    }
+    th, td {
+      border:1px solid #ccc;
+      padding:8px;
+      text-align:center;
+    }
+    th { background:#eee; }
+    .total { font-weight:bold; font-size:18px; text-align:right; }
+    .empty { text-align:center; color:var(--muted); margin-top:30px; }
+    #paymentMethods { margin: 10px 0; }
+/* -------------------- Responsive Design -------------------- */
+
+/* Tablets */
+@media screen and (max-width: 768px) {
+  body {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    flex-direction: row;
+    overflow-x: auto;
+  }
+
+  .main {
+    padding: 10px;
+  }
+
+  .product-grid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  }
+}
+
+/* Phones */
+@media screen and (max-width: 480px) {
+  .sidebar button {
+    font-size: 14px;
+    padding: 8px;
+  }
+
+  .product-card img {
+    height: 120px;
+  }
+
+  form input, form textarea, form button {
+    padding: 8px;
+    font-size: 14px;
+  }
+}
+
+
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🛒 Checkout</h1>
+    <button class="btn" onclick="goBack()">← Continue Shopping</button>
+  </header>
+  <main>
+    <div id="cartContainer"></div>
+
+    <div id="paymentMethods" style="display:none;">
+      <label><input type="radio" name="payment" value="Mpesa" checked> Mpesa</label>
+      <label><input type="radio" name="payment" value="Card"> Card</label>
+      <label><input type="radio" name="payment" value="Cash"> Cash</label>
+    </div>
+
+    <div id="checkoutActions" style="display:none;">
+      <button class="btn" onclick="clearCart()">Clear Cart</button>
+      <button class="btn" onclick="checkout()">Checkout</button>
+    </div>
+  </main>
+
+  <script>
+    const token = localStorage.getItem("token");
+    let cartItems = [];
+
+    async function fetchCart() {
+      if (!token) {
+        document.getElementById("cartContainer").innerHTML = '<p class="empty">You must log in to view cart.</p>';
+        return;
+      }
+
+      const res = await fetch("/user/cart", {
+        headers: { "Authorization": `Bearer ${token}` }
+      });
+
+      if (!res.ok) {
+        document.getElementById("cartContainer").innerHTML = '<p class="empty">Failed to load cart.</p>';
+        return;
+      }
+
+      cartItems = await res.json();
+      renderCart();
+    }
+
+    function renderCart() {
+      const container = document.getElementById("cartContainer");
+      if (!cartItems || cartItems.length === 0) {
+        container.innerHTML = '<p class="empty">Your cart is empty.</p>';
+        document.getElementById("checkoutActions").style.display = "none";
+        document.getElementById("paymentMethods").style.display = "none";
+        return;
+      }
+
+      let html = '<table><tr><th>Product</th><th>Price</th><th>Quantity</th><th>Subtotal</th><th>Action</th></tr>';
+      let total = 0;
+      let outOfStock = false;
+
+      cartItems.forEach(item => {
+        const qty = item.quantity ?? 1;
+        const price = item.price ?? 0;
+        const subtotal = qty * price;
+        total += subtotal;
+
+        if (item.product_quantity != null && item.product_quantity < qty) outOfStock = true;
+
+        html += `<tr>
+          <td>${item.name || item.product_name}</td>
+          <td>Ksh ${price}</td>
+          <td>${qty}</td>
+          <td>Ksh ${subtotal}</td>
+          <td><button class="btn" onclick="removeItem(${item.id})">Remove</button></td>
+        </tr>`;
+      });
+
+      html += `<tr><td colspan="3" class="total">Total</td><td colspan="2" class="total">Ksh ${total}</td></tr></table>`;
+
+      if (outOfStock) {
+        html += '<p style="color:red; font-weight:bold;">Some items are out of stock. Please update your cart before checkout.</p>';
+      }
+
+      container.innerHTML = html;
+      document.getElementById("checkoutActions").style.display = "flex";
+      document.getElementById("paymentMethods").style.display = outOfStock ? "none" : "block";
+    }
+
+    async function removeItem(id) {
+      const res = await fetch(`/user/cart/${id}`, {
+        method: "DELETE",
+        headers: { "Authorization": `Bearer ${token}` }
+      });
+      if (res.ok) fetchCart();
+    }
+
+    async function clearCart() {
+      const res = await fetch(`/user/cart/clear`, {
+        method: "DELETE",
+        headers: { "Authorization": `Bearer ${token}` }
+      });
+      if (res.ok) fetchCart();
+    }
+
+    async function checkout() {
+      if (!cartItems || cartItems.length === 0) return alert("Cart is empty.");
+
+      let outOfStock = cartItems.some(item => item.product_quantity != null && item.product_quantity < item.quantity);
+      if (outOfStock) return alert("Some items are out of stock. Update your cart.");
+
+      const paymentMethod = document.querySelector('input[name="payment"]:checked')?.value;
+      if (!paymentMethod) return alert("Select a payment method.");
+
+      const checkoutCart = cartItems.map(item => ({
+        product_id: item.product_id,
+        quantity: item.quantity,
+        name: item.name
+      }));
+
+      try {
+        const res = await fetch("/user/checkout", {
+          method: "POST",
+          headers: { 
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
+          body: JSON.stringify({ cart: checkoutCart, paymentMethod })
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+          alert("Checkout successful! Thank you for your purchase.");
+          fetchCart();
+          window.location.href = "user-dashboard.html";
+        } else {
+          alert(`Checkout failed: ${data.error}`);
+        }
+      } catch (err) {
+        alert("Checkout failed. Try again.");
+      }
+    }
+
+    function goBack() {
+      window.location.href = "user-dashboard.html";
+    }
+
+    fetchCart();
+  </script>
+</body>
+</html>
