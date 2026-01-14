@@ -204,4 +204,40 @@ router.get("/orders", verifyToken, (req, res) => {
   });
 });
 
+/**
+ * ❌ CANCEL ORDER
+ */
+router.post("/orders/:id/cancel", verifyToken, (req, res) => {
+  const order_id = req.params.id;
+  const user_id = req.user.id;
+
+  // Check if order belongs to user and is pending
+  db.query(
+    "SELECT status FROM orders WHERE id = ? AND user_id = ?",
+    [order_id, user_id],
+    (err, results) => {
+      if (err) return res.status(500).json({ error: err.message });
+      if (results.length === 0) return res.status(404).json({ error: "Order not found" });
+
+      const status = results[0].status;
+      if (status !== 'Pending') {
+        return res.status(400).json({ error: "Cannot cancel order that is already processed or delivered." });
+      }
+
+      // Update status to Cancelled
+      db.query(
+        "UPDATE orders SET status = 'Cancelled' WHERE id = ?",
+        [order_id],
+        (err) => {
+          if (err) return res.status(500).json({ error: err.message });
+
+          // Optional: Restore product quantities?
+          // For now, simpler to just mark as cancelled.
+          res.json({ message: "Order cancelled successfully" });
+        }
+      );
+    }
+  );
+});
+
 module.exports = router;

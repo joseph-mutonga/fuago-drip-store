@@ -1,80 +1,254 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admin Dashboard - Product Management</title>
   <link rel="stylesheet" href="style.css" />
   <style>
-    *{box-sizing:border-box;margin:0;padding:0}
-    body{display:flex;min-height:100vh;font-family:Segoe UI,Arial,sans-serif;background:#f4f6f8}
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    body {
+      display: flex;
+      min-height: 100vh;
+      font-family: Segoe UI, Arial, sans-serif;
+      background: #f4f6f8
+    }
 
     /* --- Fixed Sidebar --- */
-    .sidebar{
-      width:250px;
-      background:#232f3e;
-      color:#fff;
-      padding:20px;
-      display:flex;
-      flex-direction:column;
-      position:fixed;
-      top:0;
-      left:0;
-      height:100vh;
-      overflow-y:auto;
+    .sidebar {
+      width: 250px;
+      background: #232f3e;
+      color: #fff;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100vh;
+      overflow-y: auto;
     }
-    .sidebar h2{text-align:center;margin-bottom:20px}
-    .sidebar button,.sidebar a{
-      display:block;background:none;color:#fff;border:none;
-      padding:10px 12px;border-radius:6px;text-align:left;
-      cursor:pointer;text-decoration:none
+
+    .sidebar h2 {
+      text-align: center;
+      margin-bottom: 20px
     }
-    .sidebar button:hover,.sidebar a:hover{background:#ffa41c;color:#000}
-    .logout-btn{margin-top:auto;background:#e63946;padding:10px;border-radius:6px;border:none;cursor:pointer;color:#fff}
+
+    .sidebar button,
+    .sidebar a {
+      display: block;
+      background: none;
+      color: #fff;
+      border: none;
+      padding: 10px 12px;
+      border-radius: 6px;
+      text-align: left;
+      cursor: pointer;
+      text-decoration: none
+    }
+
+    .sidebar button:hover,
+    .sidebar a:hover {
+      background: #ffa41c;
+      color: #000
+    }
+
+    .logout-btn {
+      margin-top: auto;
+      background: #e63946;
+      padding: 10px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      color: #fff
+    }
 
     /* --- Main Content shifted right --- */
-    .main{
-      flex:1;
-      padding:20px;
-      margin-left:250px;
-      overflow:auto;
+    .main {
+      flex: 1;
+      padding: 20px;
+      margin-left: 250px;
+      overflow: auto;
     }
 
-    .section{background:#fff;border-radius:8px;padding:18px;box-shadow:0 2px 8px rgba(0,0,0,0.08);margin-bottom:18px}
-    form input,form textarea,form button{width:100%;padding:10px;margin:8px 0;border-radius:6px;border:1px solid #ccc}
-    form button{background:#ffa41c;border:none;color:#000;cursor:pointer;font-weight:700}
-    .product-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;margin-top:12px}
-    .product-card{background:#fff;border-radius:8px;padding:10px;box-shadow:0 2px 6px rgba(0,0,0,0.08);text-align:center;position:relative}
-    .product-card img{width:100%;height:150px;object-fit:cover;border-radius:6px}
-    .product-card h3{margin:10px 0 4px}
-    .product-actions{display:flex;gap:8px;justify-content:center;margin-top:10px}
-    .btn{padding:8px 10px;border-radius:6px;border:none;cursor:pointer;font-weight:700}
-    .edit-btn{background:#007bff;color:#fff}
-    .delete-btn{background:#e63946;color:#fff}
-    .msg { margin:10px 0;padding:8px;border-radius:6px }
-    .success { background:#e6ffed;color:#035c2a; }
-    .error { background:#ffe6e6;color:#6b0b0b; }
-    table { width:100%; border-collapse: collapse; margin-top:10px; }
-    th, td { border:1px solid #ccc; padding:8px; text-align:left; }
-    th { background:#f4f6f8; }
-    .order-details { display:none; background:#f9f9f9; }
-    .order-details table { width:100%; margin-top:10px; }
-    .expand-btn { cursor:pointer; background:#007bff;color:#fff;padding:4px 6px;border-radius:4px;border:none; }
+    .section {
+      background: #fff;
+      border-radius: 8px;
+      padding: 18px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      margin-bottom: 18px
+    }
+
+    form input,
+    form textarea,
+    form button {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      border-radius: 6px;
+      border: 1px solid #ccc
+    }
+
+    form button {
+      background: #ffa41c;
+      border: none;
+      color: #000;
+      cursor: pointer;
+      font-weight: 700
+    }
+
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 16px;
+      margin-top: 12px
+    }
+
+    .product-card {
+      background: #fff;
+      border-radius: 8px;
+      padding: 10px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+      text-align: center;
+      position: relative
+    }
+
+    .product-card img {
+      width: 100%;
+      height: 150px;
+      object-fit: cover;
+      border-radius: 6px
+    }
+
+    .product-card h3 {
+      margin: 10px 0 4px
+    }
+
+    .product-actions {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      margin-top: 10px
+    }
+
+    .btn {
+      padding: 8px 10px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      font-weight: 700
+    }
+
+    .edit-btn {
+      background: #007bff;
+      color: #fff
+    }
+
+    .delete-btn {
+      background: #e63946;
+      color: #fff
+    }
+
+    .msg {
+      margin: 10px 0;
+      padding: 8px;
+      border-radius: 6px
+    }
+
+    .success {
+      background: #e6ffed;
+      color: #035c2a;
+    }
+
+    .error {
+      background: #ffe6e6;
+      color: #6b0b0b;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    th,
+    td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: left;
+    }
+
+    th {
+      background: #f4f6f8;
+    }
+
+    .order-details {
+      display: none;
+      background: #f9f9f9;
+    }
+
+    .order-details table {
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    .expand-btn {
+      cursor: pointer;
+      background: #007bff;
+      color: #fff;
+      padding: 4px 6px;
+      border-radius: 4px;
+      border: none;
+    }
 
     @media screen and (max-width: 768px) {
-      body { flex-direction: column; }
-      .sidebar { width:100%; flex-direction:row; position:relative; height:auto; }
-      .main { margin-left:0; padding:10px; }
-      .product-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+      body {
+        flex-direction: column;
+      }
+
+      .sidebar {
+        width: 100%;
+        flex-direction: row;
+        position: relative;
+        height: auto;
+      }
+
+      .main {
+        margin-left: 0;
+        padding: 10px;
+      }
+
+      .product-grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      }
     }
 
     @media screen and (max-width: 480px) {
-      .sidebar button { font-size:14px; padding:8px; }
-      .product-card img { height:120px; }
-      form input, form textarea, form button { padding:8px; font-size:14px; }
+      .sidebar button {
+        font-size: 14px;
+        padding: 8px;
+      }
+
+      .product-card img {
+        height: 120px;
+      }
+
+      form input,
+      form textarea,
+      form button {
+        padding: 8px;
+        font-size: 14px;
+      }
     }
   </style>
 </head>
+
 <body>
   <div class="sidebar">
     <h2>Admin Panel</h2>
@@ -95,7 +269,7 @@
         <textarea name="description" placeholder="Description" required></textarea>
         <input type="number" name="price" placeholder="Price (Ksh)" required>
         <input type="number" name="quantity" placeholder="Quantity" required>
-        <input type="file" name="image" accept="image/*" required>
+        <input type="file" name="images" accept="image/*" multiple required>
         <button type="submit">Upload Product</button>
       </form>
     </div>
@@ -132,9 +306,13 @@
       <table id="orderTable">
         <thead>
           <tr>
+            <th>Order ID</th>
+            <th>Date</th>
             <th>User</th>
-            <th>Email</th>
-            <th>Orders</th>
+            <th>Items</th>
+            <th>Total</th>
+            <th>Status</th>
+            <th>Action</th>
           </tr>
         </thead>
         <tbody></tbody>
@@ -142,74 +320,74 @@
     </div>
   </div>
 
-<script>
-const token = localStorage.getItem("token");
-if (!token) {
-  alert("Please login as admin.");
-  location.href = "login.html";
-}
-
-function show(section){
-  document.getElementById('uploadSection').style.display = section==='upload'?'block':'none';
-  document.getElementById('storeSection').style.display = section==='store'?'block':'none';
-  document.getElementById('userSection').style.display = section==='users'?'block':'none';
-  document.getElementById('orderSection').style.display = section==='orders'?'block':'none';
-  if(section==='store') loadProducts();
-  if(section==='users') loadUsers();
-  if(section==='orders') loadOrders();
-}
-
-function logout(){
-  localStorage.removeItem("token");
-  alert("Logged out");
-  location.href="login.html";
-}
-
-function escapeHtml(s){
-  if(!s && s!==0) return '';
-  return String(s)
-    .replaceAll('&','&amp;')
-    .replaceAll('<','&lt;')
-    .replaceAll('>','&gt;')
-    .replaceAll('"','&quot;')
-    .replaceAll("'","&#39;");
-}
-
-// -------------------- UPLOAD PRODUCT --------------------
-const uploadForm = document.getElementById("uploadForm");
-const uploadMsg = document.getElementById("uploadMsg");
-uploadForm.addEventListener("submit", async e=>{
-  e.preventDefault();
-  uploadMsg.innerHTML='';
-  const fd = new FormData(uploadForm);
-  try{
-    const res = await fetch("/upload",{method:"POST",headers:{"Authorization":`Bearer ${token}`},body:fd});
-    if(res.ok){
-      uploadForm.reset();
-      uploadMsg.innerHTML='<div class="msg success">Product uploaded successfully.</div>';
-      show('store');
-    }else{
-      uploadMsg.innerHTML='<div class="msg error">Upload failed</div>';
+  <script>
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("Please login as admin.");
+      location.href = "login.html";
     }
-  }catch(err){
-    uploadMsg.innerHTML='<div class="msg error">Network error</div>';
-  }
-});
 
-// -------------------- LOAD PRODUCTS --------------------
-async function loadProducts(){
-  const list=document.getElementById('productList');
-  list.innerHTML='Loading...';
-  try{
-    const res=await fetch("/products",{headers:{"Authorization":`Bearer ${token}`}});
-    if(!res.ok){ list.innerHTML='<div class="msg error">Failed to load products</div>'; return; }
-    const products=await res.json();
-    list.innerHTML='';
-    if(!products.length){ list.innerHTML='<div class="msg">No products found.</div>'; return; }
-    products.forEach(p=>{
-      const card=document.createElement('div');
-      card.className='product-card';
-      card.innerHTML=`
+    function show(section) {
+      document.getElementById('uploadSection').style.display = section === 'upload' ? 'block' : 'none';
+      document.getElementById('storeSection').style.display = section === 'store' ? 'block' : 'none';
+      document.getElementById('userSection').style.display = section === 'users' ? 'block' : 'none';
+      document.getElementById('orderSection').style.display = section === 'orders' ? 'block' : 'none';
+      if (section === 'store') loadProducts();
+      if (section === 'users') loadUsers();
+      if (section === 'orders') loadOrders();
+    }
+
+    function logout() {
+      localStorage.removeItem("token");
+      alert("Logged out");
+      location.href = "login.html";
+    }
+
+    function escapeHtml(s) {
+      if (!s && s !== 0) return '';
+      return String(s)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('<', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", "&#39;");
+    }
+
+    // -------------------- UPLOAD PRODUCT --------------------
+    const uploadForm = document.getElementById("uploadForm");
+    const uploadMsg = document.getElementById("uploadMsg");
+    uploadForm.addEventListener("submit", async e => {
+      e.preventDefault();
+      uploadMsg.innerHTML = '';
+      const fd = new FormData(uploadForm);
+      try {
+        const res = await fetch("/upload", { method: "POST", headers: { "Authorization": `Bearer ${token}` }, body: fd });
+        if (res.ok) {
+          uploadForm.reset();
+          uploadMsg.innerHTML = '<div class="msg success">Product uploaded successfully.</div>';
+          show('store');
+        } else {
+          uploadMsg.innerHTML = '<div class="msg error">Upload failed</div>';
+        }
+      } catch (err) {
+        uploadMsg.innerHTML = '<div class="msg error">Network error</div>';
+      }
+    });
+
+    // -------------------- LOAD PRODUCTS --------------------
+    async function loadProducts() {
+      const list = document.getElementById('productList');
+      list.innerHTML = 'Loading...';
+      try {
+        const res = await fetch("/products", { headers: { "Authorization": `Bearer ${token}` } });
+        if (!res.ok) { list.innerHTML = '<div class="msg error">Failed to load products</div>'; return; }
+        const products = await res.json();
+        list.innerHTML = '';
+        if (!products.length) { list.innerHTML = '<div class="msg">No products found.</div>'; return; }
+        products.forEach(p => {
+          const card = document.createElement('div');
+          card.className = 'product-card';
+          card.innerHTML = `
         <img src="${p.image}" alt="${escapeHtml(p.name)}">
         <h3>${escapeHtml(p.name)}</h3>
         <p>${escapeHtml(p.description)}</p>
@@ -218,120 +396,136 @@ async function loadProducts(){
           <button class="btn edit-btn" onclick="editProduct(${p.id})">Edit</button>
           <button class="btn delete-btn" onclick="deleteProduct(${p.id}, this)">Delete</button>
         </div>`;
-      list.appendChild(card);
-    });
-  }catch(err){
-    list.innerHTML=`<div class="msg error">${escapeHtml(err.message)}</div>`;
-  }
-}
+          list.appendChild(card);
+        });
+      } catch (err) {
+        list.innerHTML = `<div class="msg error">${escapeHtml(err.message)}</div>`;
+      }
+    }
 
-function editProduct(id){ window.location.href=`edit.html?id=${id}`; }
+    function editProduct(id) { window.location.href = `edit.html?id=${id}`; }
 
-async function deleteProduct(id, btnEl){
-  if(!confirm("Are you sure you want to permanently delete this product?")) return;
-  btnEl.disabled=true; btnEl.textContent='Deleting...';
-  try{
-    const res=await fetch(`/delete/${id}`,{method:'DELETE',headers:{"Authorization":`Bearer ${token}`}});
-    if(res.ok){ btnEl.closest('.product-card').remove(); }
-    else{ alert('Delete failed'); btnEl.disabled=false; btnEl.textContent='Delete'; }
-  }catch(err){ alert('Network error'); btnEl.disabled=false; btnEl.textContent='Delete'; }
-}
+    async function deleteProduct(id, btnEl) {
+      if (!confirm("Are you sure you want to permanently delete this product?")) return;
+      btnEl.disabled = true; btnEl.textContent = 'Deleting...';
+      try {
+        const res = await fetch(`/delete/${id}`, { method: 'DELETE', headers: { "Authorization": `Bearer ${token}` } });
+        if (res.ok) { btnEl.closest('.product-card').remove(); }
+        else { alert('Delete failed'); btnEl.disabled = false; btnEl.textContent = 'Delete'; }
+      } catch (err) { alert('Network error'); btnEl.disabled = false; btnEl.textContent = 'Delete'; }
+    }
 
-// -------------------- LOAD USERS --------------------
-async function loadUsers(){
-  const tbody=document.querySelector("#userTable tbody");
-  tbody.innerHTML='Loading...';
-  try{
-    const res=await fetch("/admin/users",{headers:{"Authorization":`Bearer ${token}`}});
-    if(res.status===401){ alert("Session expired. Please login again."); logout(); return; }
-    if(!res.ok){ tbody.innerHTML='<tr><td colspan="5">Failed to load users</td></tr>'; return; }
-    const users=await res.json();
-    tbody.innerHTML='';
-    if(!users.length){ tbody.innerHTML='<tr><td colspan="5">No users found</td></tr>'; return; }
-    users.forEach(u=>{
-      const tr=document.createElement('tr');
-      tr.innerHTML=`<td>${escapeHtml(u.username)}</td>
+    // -------------------- LOAD USERS --------------------
+    async function loadUsers() {
+      const tbody = document.querySelector("#userTable tbody");
+      tbody.innerHTML = 'Loading...';
+      try {
+        const res = await fetch("/admin/users", { headers: { "Authorization": `Bearer ${token}` } });
+        if (res.status === 401) { alert("Session expired. Please login again."); logout(); return; }
+        if (!res.ok) { tbody.innerHTML = '<tr><td colspan="5">Failed to load users</td></tr>'; return; }
+        const users = await res.json();
+        tbody.innerHTML = '';
+        if (!users.length) { tbody.innerHTML = '<tr><td colspan="5">No users found</td></tr>'; return; }
+        users.forEach(u => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `<td>${escapeHtml(u.username)}</td>
         <td>${escapeHtml(u.email)}</td>
         <td>${escapeHtml(u.role)}</td>
-        <td>${u.orderCount||0}</td>
+        <td>${u.orderCount || 0}</td>
         <td><button class="btn delete-btn" onclick="deleteUser(${u.id}, this)">Delete</button></td>`;
-      tbody.appendChild(tr);
-    });
-  }catch(err){
-    tbody.innerHTML='<tr><td colspan="5">Network error</td></tr>';
-  }
-}
+          tbody.appendChild(tr);
+        });
+      } catch (err) {
+        tbody.innerHTML = '<tr><td colspan="5">Network error</td></tr>';
+      }
+    }
 
-async function deleteUser(id, btnEl){
-  if(!confirm("Are you sure you want to permanently delete this user?")) return;
-  btnEl.disabled=true; btnEl.textContent='Deleting...';
-  try{
-    const res=await fetch(`/admin/user/${id}`,{method:'DELETE',headers:{"Authorization":`Bearer ${token}`}});
-    if(res.ok){ btnEl.closest('tr').remove(); }
-    else{ alert('Delete failed'); btnEl.disabled=false; btnEl.textContent='Delete'; }
-  }catch(err){ alert('Network error'); btnEl.disabled=false; btnEl.textContent='Delete'; }
-}
+    async function deleteUser(id, btnEl) {
+      if (!confirm("Are you sure you want to permanently delete this user?")) return;
+      btnEl.disabled = true; btnEl.textContent = 'Deleting...';
+      try {
+        const res = await fetch(`/admin/user/${id}`, { method: 'DELETE', headers: { "Authorization": `Bearer ${token}` } });
+        if (res.ok) { btnEl.closest('tr').remove(); }
+        else { alert('Delete failed'); btnEl.disabled = false; btnEl.textContent = 'Delete'; }
+      } catch (err) { alert('Network error'); btnEl.disabled = false; btnEl.textContent = 'Delete'; }
+    }
 
-// -------------------- LOAD ORDERS (NEW FIXED VERSION) --------------------
-async function loadOrders(){
-  const tbody=document.querySelector("#orderTable tbody");
-  tbody.innerHTML='Loading...';
-  try{
-    const res=await fetch("/admin/users",{headers:{"Authorization":`Bearer ${token}`}});
-    if(res.status===401){ alert("Session expired. Please login again."); logout(); return; }
-    if(!res.ok){ tbody.innerHTML='<tr><td colspan="3">Failed to load orders</td></tr>'; return; }
-    const users=await res.json();
-    tbody.innerHTML='';
-    if(!users.length){ tbody.innerHTML='<tr><td colspan="3">No orders found</td></tr>'; return; }
+    // -------------------- LOAD ORDERS (IMPROVED) --------------------
+    async function loadOrders() {
+      const tbody = document.querySelector("#orderTable tbody");
+      tbody.innerHTML = '<tr><td colspan="7">Loading...</td></tr>';
+      try {
+        const res = await fetch("/admin/orders", { headers: { "Authorization": `Bearer ${token}` } });
+        if (res.status === 401) { alert("Session expired. Please login again."); logout(); return; }
+        if (!res.ok) { tbody.innerHTML = '<tr><td colspan="7">Failed to load orders</td></tr>'; return; }
+        const orders = await res.json();
+        tbody.innerHTML = '';
+        if (!orders.length) { tbody.innerHTML = '<tr><td colspan="7">No orders found</td></tr>'; return; }
 
-    users.filter(u=>u.orderCount>0).forEach(u=>{
-      const tr=document.createElement('tr');
-      tr.innerHTML=`
-        <td>${escapeHtml(u.username)}</td>
-        <td>${escapeHtml(u.email)}</td>
-        <td><button class="expand-btn" onclick="showUserOrders(${u.id}, this)">View Orders</button></td>`;
-      tbody.appendChild(tr);
-    });
-  }catch(err){
-    tbody.innerHTML='<tr><td colspan="3">Network error</td></tr>';
-  }
-}
+        orders.forEach(o => {
+          const tr = document.createElement('tr');
+          const itemsHtml = o.items.map(i => `${escapeHtml(i.product_name)} (x${i.quantity})`).join('<br>');
+          const date = new Date(o.created_at).toLocaleString();
 
-// -------------------- SHOW USER ORDERS --------------------
-async function showUserOrders(userId, btnEl){
-  let existing=btnEl.closest('tr').nextElementSibling;
-  if(existing && existing.classList.contains('order-details')){
-    existing.style.display = existing.style.display==='none'?'table-row':'none';
-    return;
-  }
-  const tr=document.createElement('tr'); tr.classList.add('order-details');
-  const td=document.createElement('td'); td.colSpan=3; td.innerHTML='Loading orders...'; tr.appendChild(td);
-  btnEl.closest('tr').after(tr);
+          const statusSelect = `
+        <select onchange="updateStatus(${o.order_id}, this.value)" style="padding:4px; border-radius:4px; border:1px solid #ccc;">
+          <option value="Pending" ${o.status === 'Pending' ? 'selected' : ''}>Pending</option>
+          <option value="Processing" ${o.status === 'Processing' ? 'selected' : ''}>Processing</option>
+          <option value="Shipped" ${o.status === 'Shipped' ? 'selected' : ''}>Shipped (Packaged)</option>
+          <option value="Delivered" ${o.status === 'Delivered' ? 'selected' : ''}>Delivered</option>
+          <option value="Cancelled" ${o.status === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
+        </select>
+      `;
 
-  try{
-    const res=await fetch(`/admin/user/${userId}`,{headers:{"Authorization":`Bearer ${token}`}});
-    if(!res.ok){ td.innerHTML='Failed to load orders'; return; }
-    const user=await res.json();
-    if(!user.orders || !user.orders.length){ td.innerHTML='No orders'; return; }
+          tr.innerHTML = `
+        <td>#${o.order_id}</td>
+        <td>${date}</td>
+        <td>${escapeHtml(o.user_name)}<br><small>${escapeHtml(o.user_email)}</small></td>
+        <td>${itemsHtml}</td>
+        <td>Ksh ${o.total_amount}</td>
+        <td>${statusSelect}</td>
+        <td><span id="status-msg-${o.order_id}" style="font-size:12px; color:green;"></span></td>
+      `;
+          tbody.appendChild(tr);
+        });
+      } catch (err) {
+        tbody.innerHTML = '<tr><td colspan="7">Network error</td></tr>';
+      }
+    }
 
-    let html='<table><tr><th>Product</th><th>Quantity</th><th>Payment</th><th>Date</th></tr>';
-    user.orders.forEach(o=>{
-      html+=`<tr>
-        <td>${escapeHtml(o.product_name)}</td>
-        <td>${o.quantity}</td>
-        <td>${escapeHtml(o.payment_method)}</td>
-        <td>${new Date(o.created_at).toLocaleString()}</td>
-      </tr>`;
-    });
-    html+='</table>';
-    td.innerHTML=html;
-  }catch(err){
-    td.innerHTML='Network error';
-  }
-}
+    async function updateStatus(orderId, newStatus) {
+      const msgSpan = document.getElementById(`status-msg-${orderId}`);
+      msgSpan.textContent = "Updating...";
+      msgSpan.style.color = "blue";
 
-show('upload');
-</script>
+      try {
+        const res = await fetch(`/admin/orders/${orderId}/status`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ status: newStatus })
+        });
+
+        if (res.ok) {
+          msgSpan.textContent = "✓ Saved";
+          msgSpan.style.color = "green";
+          setTimeout(() => msgSpan.textContent = "", 2000);
+        } else {
+          msgSpan.textContent = "❌ Failed";
+          msgSpan.style.color = "red";
+        }
+      } catch (err) {
+        console.error(err);
+        msgSpan.textContent = "❌ Error";
+        msgSpan.style.color = "red";
+      }
+    }
+
+    show('upload');
+  </script>
 
 </body>
+
 </html>

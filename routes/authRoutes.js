@@ -120,13 +120,42 @@ function verifyToken(req, res, next) {
 // -------------------- get current user --------------------
 router.get("/me", verifyToken, (req, res) => {
   const userId = req.user.id;
-  db.query("SELECT id, username, email, role, created_at FROM users WHERE id = ?", [userId], (err, results) => {
+
+  // Get user basic info
+  db.query("SELECT id, username, email, role, created_at FROM users WHERE id = ?", [userId], (err, userResults) => {
     if (err) {
       console.error("Get /me DB error:", err);
       return res.status(500).json({ error: "Database error" });
     }
-    if (results.length === 0) return res.status(404).json({ error: "User not found" });
-    return res.json(results[0]);
+    if (userResults.length === 0) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    const user = userResults[0];
+
+    // Get user's total orders count
+    db.query("SELECT COUNT(*) as orderCount FROM orders WHERE user_id = ?", [userId], (err2, orderResults) => {
+      if (err2) {
+        console.error("Get orders count error:", err2);
+        // Still return user info even if order count fails
+        return res.json(user);
+      }
+
+      // Add order count to user object
+      user.totalOrders = orderResults[0].orderCount || 0;
+
+      // Get user's cart items count
+      db.query("SELECT COUNT(*) as cartCount FROM cart WHERE user_id = ?", [userId], (err3, cartResults) => {
+        if (err3) {
+          console.error("Get cart count error:", err3);
+          // Return user info with order count but without cart count
+          return res.json(user);
+        }
+
+        user.cartItems = cartResults[0].cartCount || 0;
+        return res.json(user);
+      });
+    });
   });
 });
 

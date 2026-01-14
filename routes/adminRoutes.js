@@ -91,24 +91,74 @@ router.put("/user/:id/role", verifyToken, isAdmin, (req, res) => {
 });
 
 // -------------------- GET ALL ORDERS (Admin Overview) --------------------
+// -------------------- GET ALL ORDERS (Admin Overview) --------------------
 router.get("/orders", verifyToken, isAdmin, (req, res) => {
-  const query = `
+  const ordersQuery = `
     SELECT 
       o.id AS order_id,
       u.username AS user_name,
       u.email AS user_email,
-      p.name AS product_name,
-      o.quantity,
+      o.total_amount,
       o.payment_method,
+      o.status,
       o.created_at
     FROM orders o
     LEFT JOIN users u ON o.user_id = u.id
-    LEFT JOIN products p ON o.product_id = p.id
     ORDER BY o.created_at DESC
   `;
-  db.query(query, (err, results) => {
+
+  db.query(ordersQuery, (err, orders) => {
+    if (err) {
+      console.error("Error fetching admin orders:", err);
+      return res.status(500).json({ error: err.message });
+    }
+
+    if (orders.length === 0) return res.json([]);
+
+    const orderIds = orders.map(o => o.order_id);
+    const itemsQuery = `
+      SELECT 
+        oi.order_id,
+        p.name AS product_name,
+        oi.quantity,
+        oi.price
+      FROM order_items oi
+      LEFT JOIN products p ON oi.product_id = p.id
+      WHERE oi.order_id IN (${orderIds.join(',')})
+    `;
+
+    db.query(itemsQuery, (err2, items) => {
+      if (err2) {
+        console.error("Error fetching order items:", err2);
+        return res.status(500).json({ error: err2.message });
+      }
+
+      const ordersWithItems = orders.map(order => {
+        order.items = items.filter(item => item.order_id === order.order_id);
+        return order;
+      });
+
+      res.json(ordersWithItems);
+    });
+  });
+});
+
+// -------------------- UPDATE ORDER STATUS --------------------
+router.put("/orders/:id/status", verifyToken, isAdmin, (req, res) => {
+  const orderId = req.params.id;
+  const { status } = req.body;
+
+  const validStatuses = ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'];
+  if (!validStatuses.includes(status)) {
+    return res.status(400).json({ error: "Invalid status" });
+  }
+
+  const query = "UPDATE orders SET status = ? WHERE id = ?";
+  db.query(query, [status, orderId], (err, result) => {
     if (err) return res.status(500).json({ error: err.message });
-    res.json(results);
+    if (result.affectedRows === 0) return res.status(404).json({ error: "Order not found" });
+
+    res.json({ message: "Order status updated successfully", status });
   });
 });
 
@@ -121,6 +171,7 @@ router.get("/orders/user/:id", verifyToken, isAdmin, (req, res) => {
       p.name AS product_name,
       o.quantity,
       o.payment_method,
+      o.status,
       o.created_at
     FROM orders o
     LEFT JOIN products p ON o.product_id = p.id
@@ -132,46 +183,5 @@ router.get("/orders/user/:id", verifyToken, isAdmin, (req, res) => {
     res.json(results);
   });
 });
-
-// ================== ADMIN VIEW ALL ORDERS ==================
-router.get('/orders', async (req, res) => {
-  try {
-    // Get all orders and their associated users
-    const [orders] = await db.query(`
-      SELECT 
-        orders.id AS order_id,
-        users.username AS user_name,
-        users.email AS user_email,
-        orders.total_amount,
-        orders.payment_method,
-        orders.status,
-        orders.created_at
-      FROM orders
-      JOIN users ON orders.user_id = users.id
-      ORDER BY orders.created_at DESC
-    `);
-
-    // For each order, fetch ordered items
-    for (const order of orders) {
-      const [items] = await db.query(`
-        SELECT 
-          products.name AS product_name,
-          order_items.quantity,
-          order_items.price
-        FROM order_items
-        JOIN products ON order_items.product_id = products.id
-        WHERE order_items.order_id = ?
-      `, [order.order_id]);
-
-      order.items = items;
-    }
-
-    res.json(orders);
-  } catch (error) {
-    console.error("Error fetching admin orders:", error);
-    res.status(500).json({ message: "Failed to load orders" });
-  }
-});
-
 
 module.exports = router;

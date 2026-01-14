@@ -1,13 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Edit Product - Admin</title>
   <link rel="stylesheet" href="style.css" />
   <style>
-     
-
     body {
       font-family: "Segoe UI", Arial, sans-serif;
       background: #f4f6f8;
@@ -33,7 +32,9 @@
       color: #232f3e;
     }
 
-    form input, form textarea, form button {
+    form input,
+    form textarea,
+    form button {
       width: 100%;
       margin: 10px 0;
       padding: 10px;
@@ -83,49 +84,51 @@
       border-radius: 5px;
       cursor: pointer;
     }
-/* -------------------- Responsive Design -------------------- */
 
-/* Tablets */
-@media screen and (max-width: 768px) {
-  body {
-    flex-direction: column;
-  }
+    /* -------------------- Responsive Design -------------------- */
 
-  .sidebar {
-    width: 100%;
-    flex-direction: row;
-    overflow-x: auto;
-  }
+    /* Tablets */
+    @media screen and (max-width: 768px) {
+      body {
+        flex-direction: column;
+      }
 
-  .main {
-    padding: 10px;
-  }
+      .sidebar {
+        width: 100%;
+        flex-direction: row;
+        overflow-x: auto;
+      }
 
-  .product-grid {
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  }
-}
+      .main {
+        padding: 10px;
+      }
 
-/* Phones */
-@media screen and (max-width: 480px) {
-  .sidebar button {
-    font-size: 14px;
-    padding: 8px;
-  }
+      .product-grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      }
+    }
 
-  .product-card img {
-    height: 120px;
-  }
+    /* Phones */
+    @media screen and (max-width: 480px) {
+      .sidebar button {
+        font-size: 14px;
+        padding: 8px;
+      }
 
-  form input, form textarea, form button {
-    padding: 8px;
-    font-size: 14px;
-  }
-}
+      .product-card img {
+        height: 120px;
+      }
 
-
+      form input,
+      form textarea,
+      form button {
+        padding: 8px;
+        font-size: 14px;
+      }
+    }
   </style>
 </head>
+
 <body>
   <div class="edit-container">
     <h2>✏️ Edit Product</h2>
@@ -135,9 +138,10 @@
       <input type="number" id="price" name="price" placeholder="Price (Ksh)" required />
       <input type="number" id="quantity" name="quantity" placeholder="Quantity" required />
 
-      <div class="preview" id="imagePreview"></div>
+      <div class="preview" id="imagePreview" style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center;">
+      </div>
 
-      <input type="file" id="image" name="image" accept="image/*" />
+      <input type="file" id="image" name="images" accept="image/*" multiple />
       <button type="submit">Update Product</button>
     </form>
 
@@ -176,11 +180,21 @@
       document.getElementById("price").value = p.price;
       document.getElementById("quantity").value = p.quantity;
 
-      if (p.image) {
-        document.getElementById("imagePreview").innerHTML = `
-          <img src="${p.image}" alt="${p.name}">
-        `;
-      }
+      const previewDiv = document.getElementById("imagePreview");
+      previewDiv.innerHTML = "";
+
+      const images = (p.images && p.images.length > 0) ? p.images : (p.image ? [p.image] : []);
+
+      images.forEach(img => {
+        const imgEl = document.createElement("img");
+        imgEl.src = img;
+        imgEl.alt = p.name;
+        imgEl.style.width = "80px";
+        imgEl.style.height = "80px";
+        imgEl.style.objectFit = "cover";
+        imgEl.style.borderRadius = "4px";
+        previewDiv.appendChild(imgEl);
+      });
     }
 
     // Submit update
@@ -215,4 +229,5 @@
     loadProduct();
   </script>
 </body>
+
 </html>

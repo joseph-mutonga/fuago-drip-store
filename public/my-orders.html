@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>My Orders</title>
+  <style>
+    :root {
+      --accent: #ffa41c;
+      --bg: #f8f9fb;
+      --card: #fff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+      --radius: 10px;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    header {
+      background: #232f3e;
+      color: #fff;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 20px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    header h1 {
+      font-size: 20px;
+      margin: 0;
+    }
+
+    .btn {
+      background: var(--accent);
+      border: none;
+      border-radius: 8px;
+      padding: 8px 12px;
+      cursor: pointer;
+      font-weight: 600;
+      color: #000;
+      text-decoration: none;
+    }
+    
+    .btn-secondary {
+      background: #e5e7eb;
+      color: #374151;
+    }
+
+    .btn-danger {
+      background: #ef4444;
+      color: white;
+    }
+    
+    .btn-danger:hover {
+        background: #dc2626;
+    }
+
+    main {
+      padding: 20px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .section-title {
+      font-size: 24px;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #ddd;
+      padding-bottom: 10px;
+    }
+    
+    .sub-title {
+        font-size: 18px;
+        margin: 30px 0 15px;
+        color: #4b5563;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .order-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 20px;
+      margin-bottom: 20px;
+      border-left: 5px solid transparent;
+    }
+    
+    .order-card.pending { border-left-color: #ffa41c; }
+    .order-card.processing { border-left-color: #3b82f6; }
+    .order-card.shipped { border-left-color: #8b5cf6; }
+    .order-card.delivered { border-left-color: #10b981; }
+    .order-card.cancelled { border-left-color: #ef4444; }
+
+    .order-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 15px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .order-meta h3 {
+        margin: 0 0 5px 0;
+        font-size: 18px;
+    }
+    
+    .order-meta p {
+        margin: 2px 0;
+        font-size: 14px;
+        color: var(--muted);
+    }
+
+    .order-status {
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+    
+    .status-pending { background: #fff7ed; color: #c2410c; }
+    .status-processing { background: #eff6ff; color: #1d4ed8; }
+    .status-shipped { background: #f5f3ff; color: #6d28d9; }
+    .status-delivered { background: #ecfdf5; color: #047857; }
+    .status-cancelled { background: #fef2f2; color: #b91c1c; }
+
+    .order-items {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .order-item {
+      display: flex;
+      gap: 15px;
+      align-items: center;
+    }
+
+    .order-item img {
+      width: 60px;
+      height: 60px;
+      object-fit: cover;
+      border-radius: 6px;
+      border: 1px solid #eee;
+    }
+    
+    .item-details {
+        flex: 1;
+    }
+    
+    .item-name {
+        font-weight: 500;
+        margin-bottom: 4px;
+    }
+    
+    .item-meta {
+        font-size: 13px;
+        color: var(--muted);
+    }
+    
+    .order-footer {
+        margin-top: 15px;
+        padding-top: 15px;
+        border-top: 1px solid #eee;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .order-total {
+        font-size: 16px;
+        font-weight: bold;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 40px;
+        color: var(--muted);
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>📦 My Orders</h1>
+    <div>
+        <a href="user-dashboard.html" class="btn btn-secondary">← Back to Store</a>
+    </div>
+  </header>
+
+  <main>
+    <div id="loading" style="text-align:center; padding: 40px;">Loading orders...</div>
+    
+    <div id="ordersContent" style="display:none;">
+        <h2 class="sub-title">🚚 Active Orders</h2>
+        <div id="activeOrders"></div>
+        
+        <h2 class="sub-title">📜 Order History</h2>
+        <div id="orderHistory"></div>
+    </div>
+  </main>
+
+  <script>
+    const token = localStorage.getItem("token");
+    
+    if (!token) {
+        window.location.href = "login.html";
+    }
+
+    async function fetchOrders() {
+      try {
+        const res = await fetch("/user/orders", {
+          headers: { "Authorization": `Bearer ${token}` }
+        });
+
+        if (!res.ok) throw new Error("Failed to fetch orders");
+
+        const data = await res.json();
+        renderOrders(data);
+      } catch (err) {
+        document.getElementById("loading").textContent = "Error loading orders.";
+        console.error(err);
+      }
+    }
+
+    function renderOrders(flatData) {
+        document.getElementById("loading").style.display = "none";
+        document.getElementById("ordersContent").style.display = "block";
+        
+        const activeContainer = document.getElementById("activeOrders");
+        const historyContainer = document.getElementById("orderHistory");
+        
+        if (flatData.length === 0) {
+            activeContainer.innerHTML = '<p class="empty-state">No orders found.</p>';
+            historyContainer.style.display = 'none';
+            document.querySelectorAll('.sub-title').forEach(el => el.style.display = 'none');
+            return;
+        }
+
+        // Group by Order ID
+        const orders = {};
+        flatData.forEach(item => {
+            if (!orders[item.order_id]) {
+                orders[item.order_id] = {
+                    id: item.order_id,
+                    date: new Date(item.created_at).toLocaleDateString() + ' ' + new Date(item.created_at).toLocaleTimeString(),
+                    total: item.total_amount,
+                    status: item.status,
+                    items: []
+                };
+            }
+            orders[item.order_id].items.push({
+                name: item.product_name,
+                image: item.image,
+                quantity: item.quantity,
+                price: item.price
+            });
+        });
+        
+        const sortedOrderIds = Object.keys(orders).sort((a,b) => b - a); // Descending ID
+        
+        let hasActive = false;
+        let hasHistory = false;
+        
+        activeContainer.innerHTML = '';
+        historyContainer.innerHTML = '';
+
+        sortedOrderIds.forEach(id => {
+            const order = orders[id];
+            const isActive = ['Pending', 'Processing', 'Shipped'].includes(order.status);
+            
+            const card = document.createElement('div');
+            card.className = `order-card ${order.status.toLowerCase()}`;
+            
+            const statusClass = `status-${order.status.toLowerCase()}`;
+            
+            // Build Cancel Button if Pending
+            let cancelButton = '';
+            if (order.status === 'Pending') {
+                cancelButton = `<button class="btn btn-danger" onclick="cancelOrder(${order.id})">Cancel Order</button>`;
+            }
+            
+            const itemsHtml = order.items.map(item => `
+                <div class="order-item">
+                    <img src="${item.image || 'https://via.placeholder.com/60'}" alt="${item.name}">
+                    <div class="item-details">
+                        <div class="item-name">${item.name}</div>
+                        <div class="item-meta">Qty: ${item.quantity} × Ksh ${item.price}</div>
+                    </div>
+                </div>
+            `).join('');
+            
+            card.innerHTML = `
+                <div class="order-header">
+                    <div class="order-meta">
+                        <h3>Order #${order.id}</h3>
+                        <p>${order.date}</p>
+                    </div>
+                    <span class="order-status ${statusClass}">${order.status}</span>
+                </div>
+                <div class="order-items">
+                    ${itemsHtml}
+                </div>
+                <div class="order-footer">
+                    <div class="order-total">Total: Ksh ${order.total}</div>
+                    ${cancelButton}
+                </div>
+            `;
+            
+            if (isActive) {
+                activeContainer.appendChild(card);
+                hasActive = true;
+            } else {
+                historyContainer.appendChild(card);
+                hasHistory = true;
+            }
+        });
+        
+        if (!hasActive) activeContainer.innerHTML = '<p class="empty-state">No active orders.</p>';
+        if (!hasHistory) historyContainer.innerHTML = '<p class="empty-state">No past orders.</p>';
+    }
+
+    async function cancelOrder(orderId) {
+        if (!confirm("Are you sure you want to cancel this order?")) return;
+        
+        try {
+            const res = await fetch(`/user/orders/${orderId}/cancel`, {
+                method: 'POST',
+                headers: { "Authorization": `Bearer ${token}` }
+            });
+            
+            const data = await res.json();
+            if (res.ok) {
+                alert("Order cancelled.");
+                fetchOrders(); // Refresh
+            } else {
+                alert(data.error || "Failed to cancel order.");
+            }
+        } catch (err) {
+            alert("Error connecting to server.");
+        }
+    }
+
+    fetchOrders();
+  </script>
+</body>
+</html>
