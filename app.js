@@ -35,6 +35,7 @@ const upload = multer({ storage });
 
 app.use("/auth", authRoutes);
 app.use("/admin", adminRoutes);
+app.use("/admin/reports", require("./routes/reportRoutes"));
 
 
 // -------------------- UPLOAD PRODUCT --------------------

@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin Dashboard - Product Management</title>
+  <title>Fuago Drip Store - Admin Dashboard</title>
   <link rel="stylesheet" href="style.css" />
   <style>
     * {
@@ -246,16 +246,178 @@
         font-size: 14px;
       }
     }
+
+    /* --- Futuristic Reports Styling --- */
+    #reportSection {
+      background: #0f172a;
+      color: #e2e8f0;
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    #reportSection h1 {
+      font-size: 2rem;
+      background: linear-gradient(90deg, #ffa41c, #fb7185);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 30px;
+      text-align: center;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    .report-summary-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 25px;
+      margin-bottom: 40px;
+    }
+
+    .summary-card {
+      background: rgba(30, 41, 59, 0.7);
+      backdrop-filter: blur(12px);
+      padding: 25px;
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      border-left: none !important;
+    }
+
+    .summary-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background: linear-gradient(to bottom, #ffa41c, #fb7185);
+    }
+
+    .summary-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3), 0 0 15px rgba(250, 164, 28, 0.2);
+    }
+
+    .summary-card h4 {
+      color: #94a3b8;
+      font-size: 0.8rem;
+      margin-bottom: 8px;
+      letter-spacing: 1.5px;
+    }
+
+    .summary-card p {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: #f8fafc;
+      text-shadow: 0 0 10px rgba(255, 164, 28, 0.3);
+    }
+
+    .charts-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+      gap: 30px;
+      margin-bottom: 40px;
+    }
+
+    .chart-container {
+      background: rgba(30, 41, 59, 0.5);
+      backdrop-filter: blur(10px);
+      padding: 25px;
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      min-height: 450px;
+    }
+
+    .chart-container h3 {
+      margin-bottom: 25px;
+      color: #f1f5f9;
+      font-size: 1.2rem;
+      font-weight: 600;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding-bottom: 10px;
+    }
+
+    .report-table-container {
+      background: rgba(30, 41, 59, 0.5);
+      padding: 30px;
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .report-table-container h3 {
+      margin-bottom: 20px;
+      color: #f1f5f9;
+    }
+
+    #recentTransactionsTable {
+      border: none;
+      border-collapse: separate;
+      border-spacing: 0 10px;
+    }
+
+    #recentTransactionsTable th {
+      background: transparent;
+      border: none;
+      color: #94a3b8;
+      font-weight: 500;
+      padding: 15px;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 1px;
+    }
+
+    #recentTransactionsTable td {
+      background: rgba(15, 23, 42, 0.6);
+      border: none;
+      padding: 15px;
+      color: #cbd5e1;
+    }
+
+    #recentTransactionsTable tr td:first-child {
+      border-radius: 10px 0 0 10px;
+    }
+
+    #recentTransactionsTable tr td:last-child {
+      border-radius: 0 10px 10px 0;
+    }
+
+    #recentTransactionsTable tr:hover td {
+      background: rgba(51, 65, 85, 0.6);
+    }
+
+    .status-badge {
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: inline-block;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    }
+
+    @media screen and (max-width: 768px) {
+      .charts-row {
+        grid-template-columns: 1fr;
+      }
+    }
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
   <div class="sidebar">
-    <h2>Admin Panel</h2>
+    <h2>Fuago Drip</h2>
     <button onclick="show('upload')">📤 Upload Product</button>
     <button onclick="show('store')">🛒 Manage Products</button>
     <button onclick="show('users')">👥 Manage Users</button>
     <button onclick="show('orders')">📝 Manage Orders</button>
+    <button onclick="show('reports')">📊 Reports & Analytics</button>
     <button class="logout-btn" onclick="logout()">🚪 Logout</button>
   </div>
 
@@ -318,6 +480,39 @@
         <tbody></tbody>
       </table>
     </div>
+
+    <!-- Reports Section -->
+    <div id="reportSection" class="section" style="display:none;">
+      <h1>Fuago Drip Analytics</h1>
+
+      <!-- Summary Cards -->
+      <div class="report-summary-grid">
+        <div class="summary-card">
+          <h4>Total Revenue</h4>
+          <p id="stat-revenue">Ksh 0</p>
+        </div>
+        <div class="summary-card">
+          <h4>Total Products</h4>
+          <p id="stat-products">0</p>
+        </div>
+        <div class="summary-card">
+          <h4>Total Orders</h4>
+          <p id="stat-orders">0</p>
+        </div>
+      </div>
+
+      <!-- Charts Row -->
+      <div class="charts-row">
+        <div class="chart-container">
+          <h3>Monthly Sales Trend</h3>
+          <canvas id="salesChart"></canvas>
+        </div>
+        <div class="chart-container">
+          <h3>Top 5 Products</h3>
+          <canvas id="productsChart"></canvas>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script>
@@ -332,9 +527,12 @@
       document.getElementById('storeSection').style.display = section === 'store' ? 'block' : 'none';
       document.getElementById('userSection').style.display = section === 'users' ? 'block' : 'none';
       document.getElementById('orderSection').style.display = section === 'orders' ? 'block' : 'none';
+      document.getElementById('reportSection').style.display = section === 'reports' ? 'block' : 'none';
+
       if (section === 'store') loadProducts();
       if (section === 'users') loadUsers();
       if (section === 'orders') loadOrders();
+      if (section === 'reports') loadReports();
     }
 
     function logout() {
@@ -520,6 +718,150 @@
         console.error(err);
         msgSpan.textContent = "❌ Error";
         msgSpan.style.color = "red";
+      }
+    }
+
+    // -------------------- REPORTS & ANALYTICS --------------------
+    let salesChart, productsChart;
+
+    async function loadReports() {
+      // 1. Load Summary Stats
+      try {
+        const res = await fetch("/admin/reports/summary", { headers: { "Authorization": `Bearer ${token}` } });
+        const summary = await res.json();
+        document.getElementById('stat-revenue').textContent = `Ksh ${summary.totalRevenue.toLocaleString()}`;
+        document.getElementById('stat-orders').textContent = summary.totalOrders;
+        document.getElementById('stat-products').textContent = summary.totalProducts;
+      } catch (err) { console.error("Summary error:", err); }
+
+      // 2. Load Sales Chart
+      try {
+        const res = await fetch("/admin/reports/sales/monthly", { headers: { "Authorization": `Bearer ${token}` } });
+        const data = await res.json();
+        const labels = data.map(d => d.month);
+        const amounts = data.map(d => d.amount);
+
+        if (salesChart) salesChart.destroy();
+        const ctx = document.getElementById('salesChart').getContext('2d');
+        salesChart = new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: labels,
+            datasets: [{
+              label: 'Sales (Ksh)',
+              data: amounts,
+              borderColor: '#ffa41c',
+              borderWidth: 3,
+              backgroundColor: 'rgba(255, 164, 28, 0.1)',
+              fill: true,
+              tension: 0.4,
+              pointBackgroundColor: '#fff',
+              pointBorderColor: '#ffa41c',
+              pointHoverRadius: 6
+            }]
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                titleColor: '#f8fafc',
+                bodyColor: '#cbd5e1',
+                padding: 12,
+                cornerRadius: 8
+              }
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                ticks: { color: '#94a3b8' }
+              },
+              x: {
+                grid: { display: false },
+                ticks: { color: '#94a3b8' }
+              }
+            }
+          }
+        });
+      } catch (err) { console.error("Sales chart error:", err); }
+
+      // 3. Load Products Chart
+      try {
+        const res = await fetch("/admin/reports/products/top", { headers: { "Authorization": `Bearer ${token}` } });
+        const data = await res.json();
+        const labels = data.map(d => d.name);
+        const totals = data.map(d => d.total_sold);
+
+        if (productsChart) productsChart.destroy();
+        const ctx = document.getElementById('productsChart').getContext('2d');
+        productsChart = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: labels,
+            datasets: [{
+              label: 'Units Sold',
+              data: totals,
+              backgroundColor: [
+                'rgba(251, 113, 133, 0.8)',
+                'rgba(251, 146, 60, 0.8)',
+                'rgba(250, 204, 21, 0.8)',
+                'rgba(74, 222, 128, 0.8)',
+                'rgba(96, 165, 250, 0.8)'
+              ],
+              borderRadius: 8,
+              borderWidth: 0
+            }]
+          },
+          options: {
+            indexAxis: 'y',
+            responsive: true,
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                padding: 12
+              }
+            },
+            scales: {
+              x: {
+                grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                ticks: { color: '#94a3b8' }
+              },
+              y: {
+                grid: { display: false },
+                ticks: { color: '#94a3b8' }
+              }
+            }
+          }
+        });
+      } catch (err) { console.error("Products chart error:", err); }
+
+      // 4. Load Recent Transactions (Removed as per instruction)
+
+      // 5. Load Payments Chart (Removed as per instruction)
+    }
+
+    function getStatusBg(status) {
+      switch (status) {
+        case 'Pending': return 'rgba(251, 191, 36, 0.2)';
+        case 'Processing': return 'rgba(96, 165, 250, 0.2)';
+        case 'Shipped': return 'rgba(34, 211, 238, 0.2)';
+        case 'Delivered': return 'rgba(74, 222, 128, 0.2)';
+        case 'Cancelled': return 'rgba(248, 113, 113, 0.2)';
+        default: return 'rgba(148, 163, 184, 0.2)';
+      }
+    }
+
+    function getStatusColor(status) {
+      switch (status) {
+        case 'Pending': return '#fbbf24';
+        case 'Processing': return '#60a5fa';
+        case 'Shipped': return '#22d3ee';
+        case 'Delivered': return '#4ade80';
+        case 'Cancelled': return '#f87171';
+        default: return '#94a3b8';
       }
     }
 

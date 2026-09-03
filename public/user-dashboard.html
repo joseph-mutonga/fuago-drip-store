@@ -4,71 +4,132 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>User Dashboard</title>
+  <title>Fuago Drip Store - User Dashboard</title>
   <style>
     :root {
       --accent: #ffa41c;
-      --bg: #f8f9fb;
-      --card: #fff;
-      --text: #1f2937;
-      --muted: #6b7280;
-      --shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
-      --radius: 10px;
+      --accent-secondary: #fb7185;
+      --bg: #fdfdfe;
+      --card: rgba(255, 255, 255, 0.8);
+      --text: #0f172a;
+      --muted: #64748b;
+      --border: rgba(226, 232, 240, 0.8);
+      --shadow: 0 4px 20px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.02);
+      --radius-xl: 20px;
+      --radius-lg: 14px;
+      --font-main: 'Segoe UI', system-ui, -apple-system, sans-serif;
     }
 
     body {
       margin: 0;
-      font-family: "Segoe UI", Arial, sans-serif;
+      font-family: var(--font-main);
       background: var(--bg);
       color: var(--text);
+      line-height: 1.5;
+    }
+
+    /* Futurism Overlays */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(255, 164, 28, 0.03) 0%, transparent 40%),
+        radial-gradient(circle at 100% 100%, rgba(251, 113, 133, 0.03) 0%, transparent 40%);
+      pointer-events: none;
+      z-index: -1;
     }
 
     /* header */
     header {
-      background: #232f3e;
-      color: #fff;
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      color: var(--text);
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 12px 20px;
+      padding: 16px 40px;
       position: sticky;
       top: 0;
       z-index: 100;
+      border-bottom: 1px solid var(--border);
     }
 
     header h1 {
-      font-size: 20px;
+      font-size: 24px;
       margin: 0;
+      letter-spacing: -0.5px;
+      font-weight: 800;
+      background: linear-gradient(90deg, #232f3e, #4a5568);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
 
     .header-btns {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 16px;
     }
 
     .btn {
-      background: var(--accent);
-      border: none;
-      border-radius: 10px;
-      color: #000;
-      padding: 8px 12px;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      color: var(--text);
+      padding: 10px 20px;
       cursor: pointer;
       font-weight: 600;
-      position: relative;
+      font-size: 14px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn:hover {
+      background: #f8fafc;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      border-color: var(--accent);
+    }
+
+    .btn-primary {
+      background: var(--text);
+      color: white;
+      border: none;
+    }
+
+    .btn-primary:hover {
+      background: #1e293b;
+      color: white;
     }
 
     .profile-icon {
-      background: #fff;
-      color: #232f3e;
+      background: #f1f5f9;
+      color: var(--text);
       font-size: 18px;
       border-radius: 50%;
-      width: 36px;
-      height: 36px;
+      width: 44px;
+      height: 44px;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
+      transition: all 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .profile-icon:hover {
+      border-color: var(--accent);
+      transform: scale(1.05);
+      background: white;
+      box-shadow: var(--shadow);
     }
 
     /* cart badge */
@@ -78,65 +139,88 @@
 
     .cart-badge {
       position: absolute;
-      top: -6px;
+      top: -8px;
       right: -8px;
-      background: #e63946;
+      background: var(--accent-secondary);
       color: #fff;
-      width: 18px;
-      height: 18px;
+      width: 20px;
+      height: 20px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 12px;
-      font-weight: 700;
+      font-size: 11px;
+      font-weight: 800;
+      border: 2px solid white;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
 
     /* layout */
     main {
-      padding: 20px;
-      transition: filter .3s ease;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 40px;
+      transition: all .3s ease;
     }
 
     #searchContainer {
-      margin-bottom: 20px;
+      margin-bottom: 40px;
+      position: relative;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
     }
 
     #searchInput {
       width: 100%;
-      padding: 10px 12px;
-      border-radius: 10px;
-      border: 1px solid #ccc;
+      padding: 16px 24px;
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--border);
+      background: white;
       font-size: 16px;
       outline: none;
       box-sizing: border-box;
+      transition: all 0.3s ease;
+      box-shadow: var(--shadow);
+    }
+
+    #searchInput:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 4px rgba(255, 164, 28, 0.1), var(--shadow);
     }
 
     .product-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 18px;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 30px;
     }
 
     .product-card {
-      background: var(--card);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 12px;
-      text-align: center;
-      transition: transform .12s ease;
+      background: white;
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--border);
+      padding: 20px;
+      text-align: left;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      position: relative;
+      display: flex;
+      flex-direction: column;
     }
 
     .product-card:hover {
-      transform: translateY(-6px);
+      transform: translateY(-10px);
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.03);
+      border-color: rgba(255, 164, 28, 0.3);
     }
 
     .image-slider {
       position: relative;
       width: 100%;
-      height: 180px;
+      height: 240px;
       overflow: hidden;
-      border-radius: 8px;
+      border-radius: var(--radius-lg);
+      margin-bottom: 20px;
+      background: #f1f5f9;
     }
 
     .image-slider img {
@@ -147,74 +231,89 @@
       height: 100%;
       object-fit: cover;
       opacity: 0;
-      transition: opacity 1s ease-in-out;
+      transition: opacity 0.8s ease;
     }
 
     .image-slider img.active {
       opacity: 1;
-      z-index: 1;
+      scale: 1.05;
+      transition: opacity 0.8s ease, scale 8s linear;
     }
 
     .product-card h3 {
-      margin: 8px 0 6px;
-      font-size: 16px;
+      margin: 0 0 8px;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text);
     }
 
     .price {
-      color: var(--accent);
-      font-weight: 700;
+      color: var(--text);
+      font-weight: 800;
+      font-size: 20px;
+      margin-bottom: 12px;
     }
 
     .cart-btn {
-      margin-top: 10px;
-      padding: 8px 10px;
-      border-radius: 8px;
+      width: 100%;
+      margin-top: auto;
+      padding: 12px;
+      border-radius: var(--radius-lg);
       border: none;
       font-weight: 700;
+      font-size: 14px;
       cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
     }
 
     .cart-btn.add {
-      background: var(--accent);
-      color: #000;
+      background: #f8fafc;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .cart-btn.add:hover {
+      background: var(--text);
+      color: white;
     }
 
     .cart-btn.remove {
+      background: rgba(230, 57, 70, 0.05);
+      color: #e63946;
+      border: 1px solid rgba(230, 57, 70, 0.1);
+    }
+
+    .cart-btn.remove:hover {
       background: #e63946;
-      color: #fff;
+      color: white;
     }
 
     .small-muted {
       color: var(--muted);
-      font-size: 13px;
+      font-size: 14px;
+      margin-bottom: 4px;
     }
 
-    /* Sidebar overlay */
-    #overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.4);
-      display: none;
-      z-index: 50;
-      transition: opacity 0.3s ease;
-    }
-
+    /* Account Sidebar */
     #accountSidebar {
       position: fixed;
       top: 0;
       right: 0;
-      width: 25%;
-      max-width: 300px;
+      width: 100%;
+      max-width: 380px;
       height: 100%;
-      background: #fff;
-      box-shadow: -2px 0 8px rgba(0, 0, 0, 0.2);
-      padding: 20px;
+      background: white;
+      box-shadow: -20px 0 50px rgba(0, 0, 0, 0.05);
+      padding: 40px;
       transform: translateX(100%);
-      transition: transform 0.3s ease;
-      z-index: 51;
+      transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 1000;
+      box-sizing: border-box;
+      border-left: 1px solid var(--border);
       overflow-y: auto;
     }
 
@@ -222,151 +321,194 @@
       transform: translateX(0);
     }
 
+    #overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(15, 23, 42, 0.2);
+      backdrop-filter: blur(4px);
+      display: none;
+      z-index: 999;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+
     #overlay.active {
       display: block;
+      opacity: 1;
     }
 
-    main.sidebar-open {
-      filter: blur(2px);
-      pointer-events: none;
-    }
-
-    /* Footer */
-    footer {
-      background: #232f3e;
-      color: #fff;
-      padding: 20px;
-      text-align: center;
-    }
-
-    footer a {
-      color: #fff;
-      margin: 0 8px;
-      text-decoration: none;
-    }
-
-    footer a:hover {
-      text-decoration: underline;
-    }
-
-    /* Responsive */
-    @media screen and (max-width: 768px) {
-      body {
-        flex-direction: column;
-      }
-
-      .sidebar {
-        width: 100%;
-        flex-direction: row;
-        overflow-x: auto;
-      }
-
-      .main {
-        padding: 10px;
-      }
-
-      .product-grid {
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-      }
-    }
-
-    @media screen and (max-width: 480px) {
-      .sidebar button {
-        font-size: 14px;
-        padding: 8px;
-      }
-
-      .product-card img {
-        height: 120px;
-      }
-
-      form input,
-      form textarea,
-      form button {
-        padding: 8px;
-        font-size: 14px;
-      }
-    }
-
-    /* Order tracking */
-    #orderTracking {
-      background: #fff3e0;
-      border-radius: 10px;
-      padding: 12px;
-      margin: 12px 0;
-      font-size: 14px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    }
-
-    #orderCountdown {
-      font-weight: 700;
-      color: #e65100;
-    }
-
-    /* Account details */
+    /* Account details modern & Interactive */
     #accountDetails {
-      margin-bottom: 12px;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      padding: 16px;
-      border-radius: 12px;
+      margin: 24px 0;
+      background: white;
+      padding: 30px;
+      border-radius: var(--radius-xl);
       text-align: center;
-      color: white;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      border: 1px solid var(--border);
+      transition: all 0.3s ease;
+      cursor: default;
+    }
+
+    #accountDetails:hover {
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+      border-color: var(--accent);
+      transform: scale(1.02);
     }
 
     #accountDetails img {
-      width: 80px;
-      height: 80px;
+      width: 100px;
+      height: 100px;
       border-radius: 50%;
-      margin-bottom: 10px;
+      margin-bottom: 16px;
       object-fit: cover;
-      border: 3px solid white;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+      border: 4px solid white;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
 
-    #accountDetails p {
-      margin: 6px 0;
+    #accountDetails:hover img {
+      transform: rotate(5deg) scale(1.1);
+    }
+
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px;
+      border-bottom: 1px solid #f1f5f9;
+      transition: background 0.2s ease;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .info-row:hover {
+      background: #f8fafc;
+    }
+
+    .info-row strong {
+      font-size: 13px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .info-row span {
       font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
     }
 
-    #userName {
-      font-size: 18px;
+    #orderTracking {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      margin: 20px 0;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+      transition: all 0.3s ease;
+    }
+
+    #orderTracking:hover {
+      border-color: var(--accent);
+      transform: translateY(-3px);
+    }
+
+    .tracking-status-pulse {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      background: var(--accent);
+      border-radius: 50%;
+      margin-right: 8px;
+      box-shadow: 0 0 0 rgba(255, 164, 28, 0.4);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% {
+        box-shadow: 0 0 0 0 rgba(255, 164, 28, 0.7);
+      }
+
+      70% {
+        box-shadow: 0 0 0 10px rgba(255, 164, 28, 0);
+      }
+
+      100% {
+        box-shadow: 0 0 0 0 rgba(255, 164, 28, 0);
+      }
+    }
+
+    #orderTracking h3 {
+      margin: 0 0 12px;
+      font-size: 15px;
       font-weight: 700;
-      margin-top: 8px !important;
     }
 
-    #userEmail {
-      font-size: 13px;
-      opacity: 0.95;
+    /* Footer Modernized */
+    footer {
+      background: #0f172a;
+      padding: 60px 40px;
+      text-align: center;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      color: #94a3b8;
     }
 
-    #extraUserDetails {
-      margin-top: 12px;
-      padding-top: 12px;
-      border-top: 1px solid rgba(255, 255, 255, 0.3);
+    footer h3 {
+      font-size: 1.5rem;
+      background: linear-gradient(90deg, #ffa41c, #fb7185);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 16px;
+      font-weight: 800;
     }
 
-    #extraUserDetails p {
-      margin: 8px 0;
-      font-size: 13px;
-      text-align: left;
-      padding: 0 8px;
+    .social-links a {
+      color: #cbd5e1;
+      margin: 0 12px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 14px;
+      transition: all 0.3s ease;
+      padding: 8px 16px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.05);
     }
 
-    #extraUserDetails strong {
-      opacity: 0.9;
-      margin-right: 6px;
+    .social-links a:hover {
+      color: #fff;
+      background: rgba(255, 164, 28, 0.1);
+      transform: translateY(-2px);
+    }
+
+    @media screen and (max-width: 768px) {
+      main {
+        padding: 20px;
+      }
+
+      header {
+        padding: 12px 20px;
+      }
+
+      .product-grid {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      }
     }
   </style>
 </head>
 
 <body>
   <header>
-    <h1 style="background-color: white; color: black;">🛍️ My Store</h1>
+    <h1>Fuago Drip Store</h1>
     <div class="header-btns">
       <div class="cart-wrap">
-        <button class="btn" id="viewCartBtn" onclick="goToCart()">🛒 Cart</button>
-        <div id="cartBadge" class="cart-badge" style="display:none">0</div>
+        <button class="btn btn-primary" id="viewCartBtn" onclick="goToCart()">
+          <span>🛒</span> Cart
+          <div id="cartBadge" class="cart-badge" style="display:none">0</div>
+        </button>
       </div>
       <div class="profile-icon" onclick="openSidebar()">👤</div>
     </div>
@@ -388,10 +530,13 @@
       <p id="orderCountdown">Loading...</p>
     </div>
 
-    <button class="btn" onclick="window.location.href='my-orders.html'" style="margin-bottom: 10px; width: 100%;">📦
-      View My Orders</button>
-    <button class="btn" onclick="logout()"
-      style="background-color: #e5e7eb; color: #374151; width: 100%;">Logout</button>
+    <button class="btn btn-primary" onclick="window.location.href='my-orders.html'"
+      style="margin-bottom: 12px; width: 100%; justify-content: center;">
+      📦 View My Orders
+    </button>
+    <button class="btn" onclick="logout()" style="width: 100%; justify-content: center; background: #f1f5f9;">
+      Logout
+    </button>
   </div>
 
   <main id="mainContent">
@@ -404,14 +549,15 @@
   </main>
 
   <footer id="companyFooter">
-    <h3>About Our Company</h3>
-    <p id="companyDescription">We are a trusted store providing quality products to our customers. Contact us anytime!
+    <h3>About Fuago Drip Store</h3>
+    <p id="companyDescription">Your ultimate destination for the latest trends and premium style. Elevate your drip with
+      Fuago, where quality meets urban innovation.
     </p>
-    <div id="socialLinks">
-      <a href="https://facebook.com/YourCompany" target="_blank">Facebook</a>
-      <a href="https://twitter.com/YourCompany" target="_blank">Twitter</a>
-      <a href="https://instagram.com/YourCompany" target="_blank">Instagram</a>
-      <a href="mailto:contact@yourcompany.com">Email</a>
+    <div class="social-links" id="socialLinks">
+      <a href="#">Facebook</a>
+      <a href="#">Twitter</a>
+      <a href="#">Instagram</a>
+      <a href="#">Email</a>
     </div>
   </footer>
 
@@ -578,43 +724,48 @@
 
         // Show user role
         if (user.role) {
-          const roleElement = document.createElement("p");
-          roleElement.innerHTML = `<strong>Role:</strong> <span style="color: ${user.role === 'admin' ? '#ffd700' : '#90ee90'}; text-transform: capitalize; font-weight: 600;">${user.role}</span>`;
-          extra.appendChild(roleElement);
+          const roleRow = document.createElement("div");
+          roleRow.className = "info-row";
+          roleRow.innerHTML = `<strong>Role</strong> <span>${user.role}</span>`;
+          extra.appendChild(roleRow);
         }
 
         // Show total orders
         if (user.totalOrders !== undefined) {
-          const ordersElement = document.createElement("p");
-          ordersElement.innerHTML = `<strong>📦 Total Orders:</strong> ${user.totalOrders}`;
-          extra.appendChild(ordersElement);
+          const ordersRow = document.createElement("div");
+          ordersRow.className = "info-row";
+          ordersRow.innerHTML = `<strong>Total Orders</strong> <span>${user.totalOrders}</span>`;
+          extra.appendChild(ordersRow);
         }
 
         // Show cart items
         if (user.cartItems !== undefined) {
-          const cartElement = document.createElement("p");
-          cartElement.innerHTML = `<strong>🛒 Cart Items:</strong> ${user.cartItems}`;
-          extra.appendChild(cartElement);
+          const cartRow = document.createElement("div");
+          cartRow.className = "info-row";
+          cartRow.innerHTML = `<strong>Cart Items</strong> <span>${user.cartItems}</span>`;
+          extra.appendChild(cartRow);
         }
 
         // Show account creation date
         if (user.created_at) {
-          const dateElement = document.createElement("p");
+          const dateRow = document.createElement("div");
+          dateRow.className = "info-row";
           const date = new Date(user.created_at);
           const formattedDate = date.toLocaleDateString('en-US', {
             year: 'numeric',
-            month: 'long',
+            month: 'short',
             day: 'numeric'
           });
-          dateElement.innerHTML = `<strong>📅 Member Since:</strong> ${formattedDate}`;
-          extra.appendChild(dateElement);
+          dateRow.innerHTML = `<strong>Joined</strong> <span>${formattedDate}</span>`;
+          extra.appendChild(dateRow);
         }
 
         // Show user ID
         if (user.id) {
-          const idElement = document.createElement("p");
-          idElement.innerHTML = `<strong>🆔 User ID:</strong> #${user.id}`;
-          extra.appendChild(idElement);
+          const idRow = document.createElement("div");
+          idRow.className = "info-row";
+          idRow.innerHTML = `<strong>User ID</strong> <span>#${user.id}</span>`;
+          extra.appendChild(idRow);
         }
 
       } catch (e) {
@@ -652,10 +803,13 @@
         const container = document.getElementById("orderCountdown");
         container.innerHTML = `
           <div style="text-align:left; padding:0 8px;">
-            <p style="margin:4px 0; font-size:15px; font-weight:bold; color:#000;">Order #${latestOrderId}</p>
-            <p style="margin:4px 0; font-size:13px; color:#555;">${latestOrderDate}</p>
-            <div style="margin-top:8px; padding:6px; background:white; border-radius:6px; text-align:center; border:1px solid #ddd;">
-              <span style="font-weight:bold; color:${latestOrderStatus === 'Delivered' ? 'green' : '#e65100'}">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+              <span style="font-size:15px; font-weight:bold; color:#0f172a;">Order #${latestOrderId}</span>
+              <span style="font-size:12px; color:#64748b;">${latestOrderDate}</span>
+            </div>
+            <div style="padding:15px; background:#f8fafc; border-radius:12px; border:1px solid #e2e8f0; display:flex; align-items:center;">
+              <div class="tracking-status-pulse" style="background:${latestOrderStatus === 'Cancelled' ? '#f87171' : (latestOrderStatus === 'Delivered' ? '#4ade80' : '#ffa41c')}"></div>
+              <span style="font-weight:700; font-size:14px; color:${latestOrderStatus === 'Delivered' ? '#166534' : (latestOrderStatus === 'Cancelled' ? '#991b1b' : '#92400e')}">
                 ${displayStatus}
               </span>
             </div>
