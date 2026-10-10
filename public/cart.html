@@ -1,144 +1,583 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>My Cart</title>
+  <title>EMMYY’S Inventory Management System for Laptop Store | Shopping Cart</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f8f9fb;
+    :root {
+      --primary: #0f172a;
+      --primary-accent: #2563eb;
+      --accent: #f59e0b;
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+      --shadow-md: 0 10px 25px -5px rgba(15, 23, 42, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
       margin: 0;
       padding: 0;
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
     }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Header */
     header {
-      background-color: #232f3e;
-      color: white;
-      padding: 15px 20px;
+      background: #0f172a;
+      color: #ffffff;
+      padding: 16px 28px;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      position: sticky;
+      top: 0;
+      z-index: 100;
     }
-    header h1 { margin: 0; font-size: 22px; }
-    button, .back-btn {
-      background: #febd69;
-      border: none;
-      color: black;
-      padding: 8px 12px;
-      border-radius: 5px;
-      cursor: pointer;
-      font-weight: bold;
+
+    .brand-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: #ffffff;
     }
-    .cart-container {
-      padding: 20px;
-      max-width: 800px;
-      margin: 30px auto;
-      background: white;
+
+    .brand-logo {
+      width: 38px;
+      height: 38px;
+      background: #2563eb;
       border-radius: 10px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
     }
+
+    .brand-title {
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 9px 16px;
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      border: 1px solid transparent;
+    }
+
+    .btn-outline {
+      background: rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-outline:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-primary {
+      background: var(--primary-accent);
+      color: #ffffff;
+    }
+
+    .btn-primary:hover {
+      background: #1d4ed8;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+    }
+
+    .btn-danger {
+      background: #fee2e2;
+      color: #dc2626;
+      border: 1px solid #fecaca;
+    }
+
+    .btn-danger:hover {
+      background: #fca5a5;
+      color: #991b1b;
+    }
+
+    /* Main Container */
+    main {
+      flex: 1;
+      max-width: 1000px;
+      width: 100%;
+      margin: 32px auto;
+      padding: 0 20px;
+    }
+
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .page-title {
+      font-size: 24px;
+      font-weight: 800;
+      color: #0f172a;
+    }
+
+    .cart-grid {
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      gap: 24px;
+      align-items: start;
+    }
+
+    @media (max-width: 860px) {
+      .cart-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Cart Items Card */
+    .cart-items-card {
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+    }
+
     .cart-item {
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      padding: 10px;
-      border-bottom: 1px solid #ddd;
+      gap: 18px;
+      padding: 18px 20px;
+      border-bottom: 1px solid var(--border);
+      transition: background 0.15s ease;
     }
-    .cart-item img {
-      width: 80px;
-      height: 80px;
+
+    .cart-item:last-child {
+      border-bottom: none;
+    }
+
+    .cart-item:hover {
+      background: #fafcff;
+    }
+
+    .item-img {
+      width: 84px;
+      height: 84px;
       object-fit: cover;
+      border-radius: var(--radius-sm);
+      background: #f1f5f9;
+      border: 1px solid #e2e8f0;
+      flex-shrink: 0;
+    }
+
+    .item-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .item-name {
+      font-size: 15px;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .item-specs {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .item-price {
+      font-size: 15px;
+      font-weight: 700;
+      color: #2563eb;
+    }
+
+    /* Quantity Controls */
+    .qty-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #f1f5f9;
+      padding: 4px 8px;
       border-radius: 8px;
     }
-    .cart-details { flex: 1; margin-left: 15px; }
-    .cart-details h3 { margin: 0; font-size: 16px; }
-    .cart-details p { margin: 5px 0; color: #555; }
-    .total { text-align: right; font-size: 18px; font-weight: bold; margin-top: 15px; }
-    .empty { text-align: center; padding: 50px; font-size: 18px; color: #555; }
-    .remove-btn {
-      background: #e63946;
-      color: white;
+
+    .qty-btn {
+      width: 26px;
+      height: 26px;
       border: none;
+      background: #ffffff;
       border-radius: 6px;
-      padding: 8px 10px;
+      font-weight: bold;
+      color: #0f172a;
       cursor: pointer;
-      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.06);
     }
-    .remove-btn:hover { background: #c53030; }
-    .checkout-section { margin-top: 20px; text-align: right; }
-    .checkout-btn {
-      background: #232f3e;
-      color: white;
+
+    .qty-btn:hover {
+      background: #e2e8f0;
+    }
+
+    .qty-num {
+      font-size: 14px;
+      font-weight: 700;
+      min-width: 20px;
+      text-align: center;
+    }
+
+    .item-total {
+      font-size: 15px;
+      font-weight: 800;
+      color: #0f172a;
+      min-width: 80px;
+      text-align: right;
+    }
+
+    .btn-remove {
+      background: transparent;
       border: none;
-      border-radius: 6px;
-      padding: 10px 15px;
+      color: #94a3b8;
       cursor: pointer;
-      margin-top: 10px;
-      font-weight: 600;
+      padding: 6px;
+      border-radius: 6px;
+      transition: all 0.2s;
     }
-    .checkout-btn:hover { background: #febd69; color: #000; }
-    .payment-methods { margin-top: 15px; text-align: right; }
-    .payment-methods label { margin-right: 10px; font-weight: 600; }
 
-/* -------------------- Responsive Design -------------------- */
+    .btn-remove:hover {
+      color: #dc2626;
+      background: #fee2e2;
+    }
 
-/* Tablets */
-@media screen and (max-width: 768px) {
-  body {
-    flex-direction: column;
-  }
+    /* Summary Card */
+    .summary-card {
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+      padding: 24px;
+      position: sticky;
+      top: 84px;
+    }
 
-  .sidebar {
-    width: 100%;
-    flex-direction: row;
-    overflow-x: auto;
-  }
+    .summary-title {
+      font-size: 18px;
+      font-weight: 800;
+      margin-bottom: 18px;
+      color: #0f172a;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 12px;
+    }
 
-  .main {
-    padding: 10px;
-  }
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
 
-  .product-grid {
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  }
-}
+    .summary-row.total {
+      font-size: 18px;
+      font-weight: 800;
+      color: #0f172a;
+      border-top: 1px dashed var(--border);
+      padding-top: 14px;
+      margin-top: 14px;
+      margin-bottom: 20px;
+    }
 
-/* Phones */
-@media screen and (max-width: 480px) {
-  .sidebar button {
-    font-size: 14px;
-    padding: 8px;
-  }
+    /* Payment Option Selectors */
+    .payment-label {
+      font-size: 13px;
+      font-weight: 700;
+      color: #475569;
+      margin-bottom: 10px;
+      display: block;
+    }
 
-  .product-card img {
-    height: 120px;
-  }
+    .payment-options {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
 
-  form input, form textarea, form button {
-    padding: 8px;
-    font-size: 14px;
-  }
-}
+    .payment-opt {
+      flex: 1;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 8px;
+      text-align: center;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      color: #475569;
+      transition: all 0.2s;
+    }
 
+    .payment-opt.active {
+      border-color: #2563eb;
+      background: #eff6ff;
+      color: #2563eb;
+    }
 
+    .btn-checkout {
+      width: 100%;
+      padding: 14px;
+      background: #2563eb;
+      color: #ffffff;
+      font-size: 15px;
+      font-weight: 700;
+      border: none;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-checkout:hover {
+      background: #1d4ed8;
+      box-shadow: 0 6px 18px rgba(37, 99, 235, 0.45);
+      transform: translateY(-1px);
+    }
+
+    /* Modal Overlay */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(15, 23, 42, 0.65);
+      backdrop-filter: blur(4px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+      padding: 16px;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .stk-modal {
+      background: #ffffff;
+      border-radius: var(--radius-lg);
+      padding: 32px 26px;
+      max-width: 420px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.25);
+      animation: modalPop 0.3s ease;
+    }
+
+    @keyframes modalPop {
+      from { transform: scale(0.92); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .stk-icon {
+      width: 68px;
+      height: 68px;
+      border-radius: 50%;
+      background: #dcfce7;
+      color: #16a34a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      margin: 0 auto 16px;
+      border: 3px solid #bbf7d0;
+      animation: pulseIcon 1.5s infinite;
+    }
+
+    @keyframes pulseIcon {
+      0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.4); }
+      70% { transform: scale(1.06); box-shadow: 0 0 0 12px rgba(22, 163, 74, 0); }
+      100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(22, 163, 74, 0); }
+    }
+
+    /* Empty state */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+    }
+
+    .empty-icon {
+      font-size: 54px;
+      margin-bottom: 16px;
+      color: #94a3b8;
+    }
+
+    .empty-title {
+      font-size: 20px;
+      font-weight: 800;
+      color: #0f172a;
+      margin-bottom: 8px;
+    }
+
+    .empty-desc {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+    }
   </style>
 </head>
 <body>
+  <!-- Header -->
   <header>
-    <h1>🛒 My Cart</h1>
-    <div>
-      <a href="user-dashboard.html" class="back-btn">← Back</a>
-      <button onclick="logout()">Logout</button>
+    <a href="user-dashboard.html" class="brand-wrap">
+      <div class="brand-logo">💻</div>
+      <div class="brand-title">EMMYY’S LAPTOPS</div>
+    </a>
+    <div class="header-actions">
+      <a href="user-dashboard.html" class="btn btn-outline">← Continue Shopping</a>
+      <a href="my-orders.html" class="btn btn-outline">📦 My Orders</a>
+      <button onclick="logout()" class="btn btn-outline" style="border-color:#ef4444; color:#fca5a5;">Logout</button>
     </div>
   </header>
 
-  <div class="cart-container" id="cartContainer">
-    <p class="empty">Loading your cart...</p>
+  <!-- Main Content -->
+  <main>
+    <div class="page-header">
+      <h1 class="page-title">🛒 Your Shopping Cart</h1>
+      <button id="clearCartBtn" class="btn btn-danger" style="display:none;" onclick="clearEntireCart()">Clear Cart</button>
+    </div>
+
+    <div id="cartContent">
+      <div class="empty-state">
+        <div class="empty-icon">⏳</div>
+        <div class="empty-title">Loading Cart...</div>
+      </div>
+    </div>
+  </main>
+
+  <!-- M-Pesa STK Push Modal -->
+  <div class="modal-overlay" id="stkModal">
+    <div class="stk-modal">
+      <div class="stk-icon">📱</div>
+      <h3 style="font-size:20px; font-weight:800; color:#0f172a; margin-bottom:8px;">M-Pesa STK Push Sent!</h3>
+      <p style="font-size:14px; color:#475569; line-height:1.5; margin-bottom:14px;" id="stkModalMsg">
+        Please check your phone for the Safaricom PIN prompt to authorize payment.
+      </p>
+      <div style="background:#f1f5f9; padding:12px; border-radius:10px; margin-bottom:18px; font-size:13px; color:#0f172a;">
+        <div><strong>Paying To:</strong> EMMYY’S Laptop Store (174379)</div>
+        <div id="stkPhoneDisplay" style="margin-top:4px;"><strong>Phone:</strong> Loading...</div>
+        <div id="stkAmountDisplay" style="margin-top:4px; font-size:15px; font-weight:800; color:#2563eb;"><strong>Amount:</strong> KSh 0.00</div>
+      </div>
+      <div id="stkStatus" style="font-size:13px; font-weight:700; color:#16a34a; margin-bottom:16px;">
+        ⏳ Waiting for PIN input on your mobile device...
+      </div>
+      <button class="btn btn-primary" id="stkDoneBtn" style="width:100%; justify-content:center; padding:12px;" onclick="checkMpesaStatus(true)">
+        Check payment status
+      </button>
+      <button class="btn" id="stkCloseBtn" style="width:100%; justify-content:center; padding:10px; margin-top:8px; display:none;" onclick="closeStkModal()">
+        Close
+      </button>
+    </div>
   </div>
 
   <script>
     const token = localStorage.getItem("token");
-    let currentCartItems = []; // Global cart array
+    let selectedPayment = 'Mpesa';
+    let currentCartItems = [];
+    let registeredPhone = localStorage.getItem("phone") || '';
+    let activeCheckoutRequestId = null;
+
+    function logout() {
+      localStorage.clear();
+      window.location.href = "login.html";
+    }
+
+    function selectPayment(method) {
+      selectedPayment = method;
+      document.querySelectorAll('.payment-opt').forEach(el => {
+        el.classList.toggle('active', el.dataset.method === method);
+      });
+
+      const mpesaBox = document.getElementById("mpesaBox");
+      if (mpesaBox) {
+        mpesaBox.style.display = method === 'Mpesa' ? 'block' : 'none';
+      }
+
+      const checkoutBtn = document.getElementById("checkoutBtn");
+      if (checkoutBtn) {
+        if (method === 'Mpesa') {
+          checkoutBtn.innerHTML = "📱 Pay via M-Pesa STK Push";
+        } else {
+          checkoutBtn.innerHTML = "Proceed to Checkout";
+        }
+      }
+    }
+
+    async function fetchUserProfile() {
+      if (!token) return;
+      try {
+        const res = await fetch("/auth/me", {
+          headers: { "Authorization": `Bearer ${token}` }
+        });
+        if (res.ok) {
+          const user = await res.json();
+          if (user.phone) {
+            registeredPhone = user.phone;
+            localStorage.setItem("phone", user.phone);
+            const input = document.getElementById("mpesaPhoneInput");
+            if (input) input.value = user.phone;
+          }
+        }
+      } catch (e) {
+        console.error("Profile fetch error:", e);
+      }
+    }
 
     async function loadCart() {
       if (!token) {
@@ -146,104 +585,429 @@
         return;
       }
 
-      const res = await fetch("/user/cart", {
-        headers: { "Authorization": `Bearer ${token}` }
-      });
+      await fetchUserProfile();
 
-      const container = document.getElementById("cartContainer");
-      container.innerHTML = "";
+      try {
+        const res = await fetch("/user/cart", {
+          headers: { "Authorization": `Bearer ${token}` }
+        });
 
-      if (!res.ok) {
-        container.innerHTML = "<p class='empty'>Failed to load cart.</p>";
-        return;
-      }
+        if (!res.ok) {
+          document.getElementById("cartContent").innerHTML = `
+            <div class="empty-state">
+              <div class="empty-icon">⚠️</div>
+              <div class="empty-title">Failed to load cart</div>
+              <div class="empty-desc">Please try logging in again.</div>
+              <a href="login.html" class="btn btn-primary">Login</a>
+            </div>
+          `;
+          return;
+        }
 
-      const items = await res.json();
-      currentCartItems = items;
+        const items = await res.json();
+        currentCartItems = items;
+        renderCartUI(items);
 
-      if (items.length === 0) {
-        container.innerHTML = '<p class="empty">Your cart is empty.</p>';
-        localStorage.setItem("cartCount", "0");
-        return;
-      }
-
-      let total = 0;
-      items.forEach(item => {
-        total += item.price * item.quantity;
-
-        const specsText = [item.processor, item.ram, item.storage].filter(Boolean).join(' • ');
-        div.innerHTML = `
-          <img src="${item.image || '/uploads/macbook-pro-16.jpg'}" alt="${item.name}">
-          <div class="cart-details">
-            <h3>${item.name}</h3>
-            ${specsText ? `<p style="color:#64748b; font-size:12px; margin:4px 0;">⚙️ ${specsText}</p>` : ''}
-            <p style="font-weight:700; color:#0f172a; margin:4px 0;">$${Number(item.price).toLocaleString('en-US', { minimumFractionDigits: 2 })} × ${item.quantity}</p>
+      } catch (err) {
+        console.error("Cart error:", err);
+        document.getElementById("cartContent").innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">🔌</div>
+            <div class="empty-title">Connection Error</div>
+            <div class="empty-desc">Could not reach the server. Please check your connection.</div>
           </div>
-          <button class="remove-btn" onclick="removeItem(${item.id})">Remove</button>
         `;
-        container.appendChild(div);
-      });
-
-      const totalDiv = document.createElement("div");
-      totalDiv.className = "total";
-      totalDiv.innerHTML = `Total: $${Number(total).toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
-      container.appendChild(totalDiv);
-
-      // Payment section
-      const checkoutSection = document.createElement("div");
-      checkoutSection.className = "checkout-section";
-      checkoutSection.innerHTML = `
-        <div class="payment-methods">
-          <label><input type="radio" name="payment" value="Mpesa" checked> Mpesa</label>
-          <label><input type="radio" name="payment" value="Card"> Card</label>
-          <label><input type="radio" name="payment" value="Cash"> Cash</label>
-        </div>
-        <button class="checkout-btn" onclick="checkout()">Pay Now</button>
-      `;
-      container.appendChild(checkoutSection);
-    }
-
-    async function checkout() {
-      if (!currentCartItems || currentCartItems.length === 0) return alert("Cart is empty!");
-
-      const paymentMethod = document.querySelector('input[name="payment"]:checked')?.value;
-      if (!paymentMethod) return alert("Select a payment method.");
-
-      const res = await fetch("/user/checkout", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
-        },
-        body: JSON.stringify({ cart: currentCartItems, paymentMethod })
-      });
-
-      if (res.ok) {
-        alert("Payment successful! Thank you for your purchase.");
-        // Clear cart visually and update badge
-        document.getElementById("cartContainer").innerHTML = '<p class="empty">Your cart is empty.</p>';
-        localStorage.setItem("cartCount", "0");
-      } else {
-        const err = await res.json();
-        alert("Payment failed: " + (err.error || "Try again"));
       }
     }
 
-    async function removeItem(cartId) {
-      if (!token) return;
-      const res = await fetch(`/user/cart/${cartId}`, {
-        method: "DELETE",
-        headers: { "Authorization": `Bearer ${token}` }
+    function renderCartUI(items) {
+      const container = document.getElementById("cartContent");
+      const clearBtn = document.getElementById("clearCartBtn");
+
+      if (!items || items.length === 0) {
+        clearBtn.style.display = "none";
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">🛒</div>
+            <div class="empty-title">Your Cart is Empty</div>
+            <div class="empty-desc">Looks like you haven't added any laptops yet. Explore our high-performance models!</div>
+            <a href="user-dashboard.html" class="btn btn-primary" style="padding:12px 24px; font-size:15px;">Shop Laptops</a>
+          </div>
+        `;
+        return;
+      }
+
+      clearBtn.style.display = "inline-flex";
+
+      let subtotal = 0;
+      let itemsListHtml = '';
+
+      items.forEach(item => {
+        const qty = item.quantity || 1;
+        const price = Number(item.price) || 0;
+        const lineTotal = price * qty;
+        subtotal += lineTotal;
+
+        const specs = [item.processor, item.ram, item.storage].filter(Boolean).join(' • ');
+        const imgSrc = item.image || '/uploads/macbook-pro-16.jpg';
+
+        itemsListHtml += `
+          <div class="cart-item">
+            <img src="${imgSrc}" class="item-img" alt="${item.name}">
+            <div class="item-info">
+              <div class="item-name">${item.name}</div>
+              ${specs ? `<div class="item-specs">⚙️ ${specs}</div>` : ''}
+              <div class="item-price">KSh ${price.toLocaleString('en-US', { minimumFractionDigits: 2 })}</div>
+            </div>
+
+            <div class="qty-controls">
+              <button class="qty-btn" onclick="updateItemQuantity(${item.id}, ${qty - 1})">-</button>
+              <span class="qty-num">${qty}</span>
+              <button class="qty-btn" onclick="updateItemQuantity(${item.id}, ${qty + 1})">+</button>
+            </div>
+
+            <div class="item-total">
+              KSh ${lineTotal.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+            </div>
+
+            <button class="btn-remove" onclick="removeCartItem(${item.id})" title="Remove item">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2M10 11v6M14 11v6"/>
+              </svg>
+            </button>
+          </div>
+        `;
       });
-      if (res.ok) await loadCart();
+
+      const shipping = 0;
+      const total = subtotal + shipping;
+
+      container.innerHTML = `
+        <div class="cart-grid">
+          <div class="cart-items-card">
+            ${itemsListHtml}
+          </div>
+
+          <div class="summary-card">
+            <h3 class="summary-title">Order Summary</h3>
+            <div class="summary-row">
+              <span>Subtotal (${items.length} item${items.length > 1 ? 's' : ''})</span>
+              <span>KSh ${subtotal.toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
+            </div>
+            <div class="summary-row">
+              <span>Standard Shipping</span>
+              <span style="color:#16a34a; font-weight:700;">FREE</span>
+            </div>
+            <div class="summary-row total">
+              <span>Total Amount</span>
+              <span style="color:#2563eb;">KSh ${total.toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
+            </div>
+
+            <span class="payment-label">Select Payment Method</span>
+            <div class="payment-options">
+              <div class="payment-opt ${selectedPayment === 'Mpesa' ? 'active' : ''}" data-method="Mpesa" onclick="selectPayment('Mpesa')">📱 Mpesa</div>
+              <div class="payment-opt ${selectedPayment === 'Card' ? 'active' : ''}" data-method="Card" onclick="selectPayment('Card')">💳 Card</div>
+            </div>
+
+            <!-- Mpesa Registered Phone Box -->
+            <div id="mpesaBox" style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:10px; padding:12px; margin-bottom:18px; text-align:left; display:${selectedPayment === 'Mpesa' ? 'block' : 'none'};">
+              <div style="font-size:12px; font-weight:700; color:#166534; margin-bottom:6px;">
+                📱 Registered M-Pesa Phone Number
+              </div>
+              <input type="tel" id="mpesaPhoneInput" 
+                     value="${registeredPhone}" 
+                     placeholder="e.g. 0712345678" 
+                     style="width:100%; padding:9px 12px; border:1.5px solid #86efac; border-radius:7px; font-size:14px; font-weight:600; color:#14532d; background:#fff; outline:none;" />
+              <div style="font-size:11px; color:#15803d; margin-top:5px;">
+                ✓ Auto-filled from your registration profile. STK prompt will be sent here.
+              </div>
+            </div>
+
+            <button class="btn-checkout" id="checkoutBtn" onclick="handleCheckout()">
+              ${selectedPayment === 'Mpesa' ? '📱 Pay via M-Pesa STK Push' : 'Proceed to Checkout'}
+            </button>
+          </div>
+        </div>
+      `;
     }
 
-    function logout() {
-      localStorage.clear();
-      window.location.href = "login.html";
+    async function updateItemQuantity(cartId, newQty) {
+      if (newQty <= 0) {
+        await removeCartItem(cartId);
+        return;
+      }
+
+      try {
+        const res = await fetch(`/user/cart/${cartId}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
+          body: JSON.stringify({ quantity: newQty })
+        });
+        if (res.ok) {
+          await loadCart();
+        }
+      } catch (err) {
+        console.error("Update quantity error:", err);
+      }
     }
 
-    // Load cart on page load
+    async function removeCartItem(cartId) {
+      try {
+        const res = await fetch(`/user/cart/${cartId}`, {
+          method: "DELETE",
+          headers: { "Authorization": `Bearer ${token}` }
+        });
+        if (res.ok) {
+          await loadCart();
+        }
+      } catch (err) {
+        console.error("Remove item error:", err);
+      }
+    }
+
+    async function clearEntireCart() {
+      if (!confirm("Are you sure you want to remove all items from your cart?")) return;
+      try {
+        const res = await fetch(`/user/cart/clear`, {
+          method: "DELETE",
+          headers: { "Authorization": `Bearer ${token}` }
+        });
+        if (res.ok) {
+          await loadCart();
+        }
+      } catch (err) {
+        console.error("Clear cart error:", err);
+      }
+    }
+
+    async function handleCheckout() {
+      if (!currentCartItems || currentCartItems.length === 0) return;
+
+      const checkoutBtn = document.getElementById("checkoutBtn");
+
+      // -------------------- M-PESA STK PUSH FLOW --------------------
+      if (selectedPayment === 'Mpesa') {
+        const phoneInput = document.getElementById("mpesaPhoneInput");
+        const phone = (phoneInput ? phoneInput.value.trim() : '') || registeredPhone;
+
+        if (!phone) {
+          alert("Please enter a valid phone number for M-Pesa STK Push.");
+          return;
+        }
+
+        const totalAmount = currentCartItems.reduce((sum, item) => sum + (Number(item.price) * (item.quantity || 1)), 0);
+
+        checkoutBtn.disabled = true;
+        checkoutBtn.textContent = "Initiating STK Push...";
+
+        try {
+          const stkRes = await fetch("/user/mpesa/stkpush", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${token}`
+            },
+            body: JSON.stringify({
+              phone: phone,
+              amount: totalAmount,
+              cart: currentCartItems
+            })
+          });
+
+          const stkData = await stkRes.json();
+
+          if (!stkRes.ok) {
+            alert("M-Pesa STK Push error: " + (stkData.error || "Failed to initiate"));
+            checkoutBtn.disabled = false;
+            checkoutBtn.innerHTML = "📱 Pay via M-Pesa STK Push";
+            return;
+          }
+
+          activeCheckoutRequestId = stkData.checkoutRequestId;
+          startPaymentPolling();
+
+          // Open STK Modal
+          document.getElementById("stkPhoneDisplay").innerHTML = `<strong>Phone:</strong> ${stkData.phone || phone}`;
+          document.getElementById("stkAmountDisplay").innerHTML = `<strong>Amount:</strong> KSh ${Number(totalAmount).toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
+          document.getElementById("stkModal").classList.add("active");
+
+        } catch (err) {
+          console.error("STK Push error:", err);
+          alert("Server error sending STK Push prompt.");
+          checkoutBtn.disabled = false;
+          checkoutBtn.innerHTML = "📱 Pay via M-Pesa STK Push";
+        }
+        return;
+      }
+
+      // -------------------- STANDARD / CARD / CASH FLOW --------------------
+      checkoutBtn.disabled = true;
+      checkoutBtn.textContent = "Processing Order...";
+
+      const payload = {
+        cart: currentCartItems.map(item => ({
+          product_id: item.product_id,
+          quantity: item.quantity,
+          name: item.name,
+          price: item.price
+        })),
+        paymentMethod: selectedPayment
+      };
+
+      try {
+        const res = await fetch("/user/checkout", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+          alert("🎉 Order placed successfully!");
+          window.location.href = "my-orders.html";
+        } else {
+          alert("Checkout failed: " + (data.error || "Please try again."));
+          checkoutBtn.disabled = false;
+          checkoutBtn.textContent = "Proceed to Checkout";
+        }
+      } catch (err) {
+        console.error("Checkout error:", err);
+        alert("Server error processing your order.");
+        checkoutBtn.disabled = false;
+        checkoutBtn.textContent = "Proceed to Checkout";
+      }
+    }
+
+    async function finishMpesaPayment() {
+      const doneBtn = document.getElementById("stkDoneBtn");
+      doneBtn.disabled = true;
+      doneBtn.textContent = "Confirming order...";
+
+      const payload = {
+        cart: currentCartItems.map(item => ({
+          product_id: item.product_id,
+          quantity: item.quantity,
+          name: item.name,
+          price: item.price
+        })),
+        paymentMethod: "Mpesa",
+        checkoutRequestId: activeCheckoutRequestId
+      };
+
+      try {
+        const res = await fetch("/user/checkout", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+          document.getElementById("stkStatus").innerHTML = "✅ M-Pesa Payment Received! Creating your order...";
+          setTimeout(() => {
+            window.location.href = "my-orders.html";
+          }, 800);
+        } else {
+          alert("Order confirmation failed: " + (data.error || "Try again"));
+          doneBtn.disabled = false;
+          doneBtn.textContent = "Check payment status";
+        }
+      } catch (err) {
+        console.error("Confirmation error:", err);
+        alert("Network error confirming order.");
+        doneBtn.disabled = false;
+        doneBtn.textContent = "Check payment status";
+      }
+    }
+
+    let pollTimer = null;
+    let pollStartedAt = 0;
+    let orderSubmitting = false;
+    const POLL_INTERVAL_MS = 4000;
+    const POLL_TIMEOUT_MS = 120000;
+
+    function setStkStatus(html, color) {
+      const el = document.getElementById("stkStatus");
+      el.style.color = color || "#16a34a";
+      el.innerHTML = html;
+    }
+
+    function stopPolling() {
+      if (pollTimer) clearInterval(pollTimer);
+      pollTimer = null;
+    }
+
+    function startPaymentPolling() {
+      stopPolling();
+      pollStartedAt = Date.now();
+      document.getElementById("stkCloseBtn").style.display = "none";
+      document.getElementById("stkDoneBtn").style.display = "";
+      setStkStatus("⏳ Waiting for PIN input on your mobile device...");
+      pollTimer = setInterval(() => checkMpesaStatus(false), POLL_INTERVAL_MS);
+    }
+
+    function closeStkModal() {
+      stopPolling();
+      document.getElementById("stkModal").classList.remove("active");
+      const btn = document.getElementById("checkoutBtn");
+      btn.disabled = false;
+      btn.innerHTML = "📱 Pay via M-Pesa STK Push";
+    }
+
+    function paymentEnded(message) {
+      stopPolling();
+      setStkStatus(message, "#dc2626");
+      document.getElementById("stkDoneBtn").style.display = "none";
+      document.getElementById("stkCloseBtn").style.display = "";
+    }
+
+    // The order is only created after the server reports the payment as confirmed by Safaricom.
+    async function checkMpesaStatus(manual) {
+      if (!activeCheckoutRequestId || orderSubmitting) return;
+      try {
+        const res = await fetch("/user/mpesa/status/" + encodeURIComponent(activeCheckoutRequestId), {
+          headers: { "Authorization": "Bearer " + token }
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          if (manual) setStkStatus("⚠️ " + (data.error || "Could not check status"), "#dc2626");
+          return;
+        }
+
+        if (data.status === "COMPLETED") {
+          orderSubmitting = true;
+          stopPolling();
+          setStkStatus("✅ Payment confirmed (" + (data.mpesa_receipt_number || "received") + "). Creating your order...");
+          await finishMpesaPayment();
+          orderSubmitting = false;
+        } else if (data.status === "CANCELLED") {
+          paymentEnded("❌ Payment cancelled on your phone. No money was taken.");
+        } else if (data.status === "FAILED") {
+          paymentEnded("❌ Payment failed: " + (data.result_desc || "not completed") + ". No order was created.");
+        } else if (Date.now() - pollStartedAt > POLL_TIMEOUT_MS) {
+          stopPolling();
+          setStkStatus("⌛ No confirmation received yet. If you paid, press 'Check payment status' in a moment.", "#d97706");
+        } else if (manual) {
+          setStkStatus("⏳ Still waiting for payment confirmation...", "#d97706");
+        }
+      } catch (err) {
+        console.error("Status check error:", err);
+        if (manual) setStkStatus("⚠️ Network error checking payment status", "#dc2626");
+      }
+    }
+
+    // Load initial cart
     loadCart();
   </script>
 </body>

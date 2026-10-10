@@ -4,7 +4,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Fuago Drip Store - Admin Dashboard</title>
+  <title>EMMYY’S Inventory Management System for Laptop Store | Admin Dashboard</title>
+  <script>
+    window.location.href = "admin-dashboard.html";
+  </script>
   <link rel="stylesheet" href="style.css" />
   <style>
     * {
@@ -412,7 +415,7 @@
 
 <body>
   <div class="sidebar">
-    <h2>⚡ Fuago Laptops</h2>
+    <h2>⚡ EMMYY’S LAPTOPS</h2>
     <span style="display:block; font-size:12px; color:#cbd5e1; margin-top:-8px; margin-bottom:14px;">Admin Portal</span>
     <button onclick="show('upload')">📤 Upload Laptop</button>
     <button onclick="show('store')">💻 Manage Laptops</button>
@@ -466,7 +469,7 @@
         <textarea name="description" placeholder="Technical Description, Features, Battery, Ports, etc." required style="width:100%; height:90px;"></textarea>
 
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:12px;">
-          <input type="number" step="0.01" name="price" placeholder="Price ($ USD)" required>
+          <input type="number" step="0.01" name="price" placeholder="Price (KSh)" required>
           <input type="number" name="quantity" placeholder="Stock Quantity Available" required>
         </div>
 
@@ -523,7 +526,7 @@
 
     <!-- Reports Section -->
     <div id="reportSection" class="section" style="display:none;">
-      <h1>Fuago Drip Analytics</h1>
+      <h1>EMMYY’S Store Analytics</h1>
 
       <!-- Summary Cards -->
       <div class="report-summary-grid">
@@ -640,7 +643,7 @@
               ${p.storage ? `<span style="background:#e2e8f0; padding:2px 6px; border-radius:4px;">💽 ${escapeHtml(p.storage)}</span>` : ''}
             </div>
             <div style="display:flex; justify-content:space-between; align-items:baseline; margin:8px 0;">
-              <strong style="font-size:16px; color:#0f172a;">$${Number(p.price).toLocaleString('en-US', { minimumFractionDigits: 2 })}</strong>
+              <strong style="font-size:16px; color:#0f172a;">KSh ${Number(p.price).toLocaleString('en-US', { minimumFractionDigits: 2 })}</strong>
               <span style="font-size:12px; font-weight:600; color:${p.quantity > 5 ? '#16a34a' : '#d97706'};">Stock: ${p.quantity}</span>
             </div>
             <div class="product-actions" style="margin-top:auto;">

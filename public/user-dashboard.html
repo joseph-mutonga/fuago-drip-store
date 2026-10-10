@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Fuago Laptops - Premium Online Laptop Store</title>
+  <title>EMMYY’S Inventory Management System for Laptop Store | Laptop Store</title>
   <meta name="description" content="Shop high-performance gaming laptops, creator ultrabooks, and business notebooks online with fast shipping and warranty." />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1102,8 +1102,8 @@
     <a href="user-dashboard.html" class="brand-logo">
       <div class="brand-badge-icon">⚡</div>
       <div class="brand-info">
-        <h1>FUAGO LAPTOPS</h1>
-        <span>Online Tech Store</span>
+        <h1>EMMYY’S LAPTOPS</h1>
+        <span>Laptop Store</span>
       </div>
     </a>
 
@@ -1254,7 +1254,7 @@
 
   <!-- Footer -->
   <footer id="companyFooter">
-    <h3>⚡ FUAGO LAPTOPS</h3>
+    <h3>⚡ EMMYY’S LAPTOP STORE</h3>
     <p id="companyDescription" style="max-width:600px; margin:0 auto 20px; font-size:14px;">
       Your premier authorized destination for high-end laptops, ultraportables, and mobile workstations. Genuine products, manufacturer warranty, and rapid global delivery.
     </p>
@@ -1272,7 +1272,7 @@
       <a href="#">Privacy</a>
       <a href="#">Terms</a>
     </div>
-    <p style="font-size:12px; margin-top:24px; color:#64748b;">© 2026 Fuago Laptops. All rights reserved.</p>
+    <p style="font-size:12px; margin-top:24px; color:#64748b;">© 2026 EMMYY’S Laptop Store. All rights reserved.</p>
   </footer>
 
   <!-- Scripts -->
@@ -1433,7 +1433,7 @@
             </div>
 
             <div class="price-stock-row">
-              <div class="card-price">$${Number(p.price).toLocaleString('en-US', { minimumFractionDigits: 2 })}</div>
+              <div class="card-price">KSh ${Number(p.price).toLocaleString('en-US', { minimumFractionDigits: 2 })}</div>
               ${stockHtml}
             </div>
 
@@ -1589,7 +1589,7 @@
           </div>
           <div style="margin-top:16px; padding:16px; background:#f8fafc; border-radius:12px; border:1px solid #e2e8f0;">
             <div style="font-size:24px; font-weight:800; color:#0f172a; margin-bottom:4px;">
-              $${Number(p.price).toLocaleString('en-US', { minimumFractionDigits: 2 })}
+              KSh ${Number(p.price).toLocaleString('en-US', { minimumFractionDigits: 2 })}
             </div>
             <div style="font-size:13px; color:#16a34a; font-weight:700; margin-bottom:14px;">
               ✓ Available Stock: ${p.quantity} units
@@ -1684,11 +1684,17 @@
 
         document.getElementById("userName").textContent = `Hello, ${user.username || "User"}`;
         document.getElementById("userEmail").textContent = user.email || "";
+        if (user.phone) {
+          localStorage.setItem("phone", user.phone);
+        }
         document.getElementById("userPhoto").src = user.photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.username || 'User')}&background=0f172a&color=fff&size=80`;
 
         const extra = document.getElementById("extraUserDetails");
         extra.innerHTML = "";
 
+        if (user.phone) {
+          extra.innerHTML += `<div class="info-row"><strong>M-Pesa Phone</strong><span>${user.phone}</span></div>`;
+        }
         if (user.role) {
           extra.innerHTML += `<div class="info-row"><strong>Role</strong><span style="text-transform:capitalize; font-weight:700;">${user.role}</span></div>`;
         }

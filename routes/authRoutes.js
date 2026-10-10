@@ -10,10 +10,20 @@ const JWT_SECRET = "your_secret_key_here";
 
 // -------------------- REGISTER --------------------
 router.post("/register", (req, res) => {
-  const { username, email, password, role } = req.body;
+  const { username, email, phone, password, role } = req.body;
 
   if (!username || !email || !password) {
-    return res.status(400).json({ error: "All fields are required" });
+    return res.status(400).json({ error: "Username, email, and password are required" });
+  }
+
+  // Normalize phone number to 254XXXXXXXXX if provided
+  let formattedPhone = phone ? phone.trim().replace(/[\s\-\+]/g, '') : null;
+  if (formattedPhone) {
+    if (formattedPhone.startsWith('0')) {
+      formattedPhone = '254' + formattedPhone.substring(1);
+    } else if (formattedPhone.startsWith('7') || formattedPhone.startsWith('1')) {
+      formattedPhone = '254' + formattedPhone;
+    }
   }
 
   db.query("SELECT * FROM users WHERE email = ?", [email], async (err, results) => {
@@ -31,8 +41,8 @@ router.post("/register", (req, res) => {
       const userRole = role && (role === "admin" || role === "user") ? role : "user";
 
       db.query(
-        "INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, ?)",
-        [username, email, hashedPassword, userRole],
+        "INSERT INTO users (username, email, phone, password, role) VALUES (?, ?, ?, ?, ?)",
+        [username, email, formattedPhone, hashedPassword, userRole],
         (err2) => {
           if (err2) {
             console.error("Insert user error:", err2);
@@ -50,11 +60,13 @@ router.post("/register", (req, res) => {
 
 // -------------------- LOGIN --------------------
 router.post("/login", (req, res) => {
-  const { email, password } = req.body;
-  if (!email || !password)
-    return res.status(400).json({ error: "Email and password are required" });
+  const { email, username, password } = req.body;
+  const loginIdentifier = email || username;
 
-  db.query("SELECT * FROM users WHERE email = ?", [email], async (err, results) => {
+  if (!loginIdentifier || !password)
+    return res.status(400).json({ error: "Username or email and password are required" });
+
+  db.query("SELECT * FROM users WHERE email = ? OR username = ?", [loginIdentifier, loginIdentifier], async (err, results) => {
     if (err) {
       console.error("Login DB error:", err);
       return res.status(500).json({ error: "Database error" });
@@ -73,22 +85,24 @@ router.post("/login", (req, res) => {
       }
 
       const token = jwt.sign(
-        { id: user.id, username: user.username, role: user.role },
+        { id: user.id, username: user.username, role: user.role, phone: user.phone },
         JWT_SECRET,
         { expiresIn: "2h" }
       );
 
-      // ✅ Updated login response to clearly indicate role
+      // ✅ Updated login response to clearly indicate role and user details
       return res.json({
         message: "Login successful",
         token,
         username: user.username,
         role: user.role,
-        redirect: user.role === "admin" ? "upload.html" : "user-dashboard.html",
+        phone: user.phone || null,
+        redirect: user.role === "admin" ? "admin-dashboard.html" : "user-dashboard.html",
         user: {
           id: user.id,
           username: user.username,
           email: user.email,
+          phone: user.phone || null,
           role: user.role,
         },
       });
@@ -122,7 +136,7 @@ router.get("/me", verifyToken, (req, res) => {
   const userId = req.user.id;
 
   // Get user basic info
-  db.query("SELECT id, username, email, role, created_at FROM users WHERE id = ?", [userId], (err, userResults) => {
+  db.query("SELECT id, username, email, phone, role, created_at FROM users WHERE id = ?", [userId], (err, userResults) => {
     if (err) {
       console.error("Get /me DB error:", err);
       return res.status(500).json({ error: "Database error" });

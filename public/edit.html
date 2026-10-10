@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Edit Product - Admin</title>
+  <title>EMMYY’S Inventory Management System for Laptop Store | Edit Product</title>
   <link rel="stylesheet" href="style.css" />
   <style>
     body {
@@ -194,8 +194,8 @@
 
       <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin: 6px 0;">
         <div>
-          <label style="font-size:12px; font-weight:700; color:#475569;">Price ($ USD)</label>
-          <input type="number" step="0.01" id="price" name="price" placeholder="Price" required />
+          <label style="font-size:12px; font-weight:700; color:#475569;">Price (KSh)</label>
+          <input type="number" step="0.01" id="price" name="price" placeholder="Price (KSh)" required />
         </div>
         <div>
           <label style="font-size:12px; font-weight:700; color:#475569;">Stock Quantity</label>
@@ -283,14 +283,14 @@
 
       if (res.ok) {
         alert("✅ Laptop updated successfully!");
-        window.location.href = "upload.html"; // Return to admin dashboard
+        window.location.href = "admin-dashboard.html"; // Return to admin dashboard
       } else {
         alert("❌ Failed to update laptop.");
       }
     });
 
     function goBack() {
-      window.location.href = "upload.html";
+      window.location.href = "admin-dashboard.html";
     }
 
     function logout() {

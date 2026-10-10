@@ -6,7 +6,7 @@ const { verifyToken, isAdmin } = require("../middleware/auth");
 // -------------------- GET ALL USERS --------------------
 router.get("/users", verifyToken, isAdmin, (req, res) => {
   const query = `
-    SELECT u.id, u.username, u.email, u.role, u.created_at,
+    SELECT u.id, u.username, u.email, u.phone, u.role, u.created_at,
            COUNT(o.id) AS orderCount
     FROM users u
     LEFT JOIN orders o ON u.id = o.user_id
@@ -98,6 +98,7 @@ router.get("/orders", verifyToken, isAdmin, (req, res) => {
       o.id AS order_id,
       u.username AS user_name,
       u.email AS user_email,
+      u.phone AS user_phone,
       o.total_amount,
       o.payment_method,
       o.status,

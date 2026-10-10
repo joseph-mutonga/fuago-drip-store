@@ -71,10 +71,10 @@ app.post("/upload", upload.array("images", 5), (req, res) => {
       const imgSql = "INSERT INTO product_images (product_id, image_path) VALUES ?";
       db.query(imgSql, [imageValues], (err2) => {
         if (err2) console.error("Error saving additional images:", err2);
-        res.redirect("/upload.html");
+        res.redirect("/admin-dashboard.html");
       });
     } else {
-      res.redirect("/upload.html");
+      res.redirect("/admin-dashboard.html");
     }
   });
 });
