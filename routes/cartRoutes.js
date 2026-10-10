@@ -50,7 +50,9 @@ router.get("/cart", verifyToken, (req, res) => {
   const user_id = req.user.id;
 
   const sql = `
-    SELECT cart.id, products.id AS product_id, products.name, products.price, products.image, products.quantity AS product_quantity, cart.quantity
+    SELECT cart.id, products.id AS product_id, products.name, products.price, products.image, 
+           products.quantity AS product_quantity, cart.quantity,
+           products.brand, products.processor, products.ram, products.storage, products.screen_size
     FROM cart
     JOIN products ON cart.product_id = products.id
     WHERE cart.user_id = ?
@@ -191,7 +193,8 @@ router.get("/orders", verifyToken, (req, res) => {
   const user_id = req.user.id;
   const sql = `
     SELECT o.id AS order_id, o.total_amount, o.status, o.created_at,
-           p.name AS product_name, p.image, oi.quantity, oi.price
+           p.name AS product_name, p.image, oi.quantity, oi.price,
+           p.brand, p.processor, p.ram, p.storage
     FROM orders o
     JOIN order_items oi ON o.id = oi.order_id
     JOIN products p ON oi.product_id = p.id

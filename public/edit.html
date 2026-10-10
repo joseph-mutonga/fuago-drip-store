@@ -130,19 +130,85 @@
 </head>
 
 <body>
-  <div class="edit-container">
-    <h2>✏️ Edit Product</h2>
+  <div class="edit-container" style="width: 550px; max-width: 95%;">
+    <h2>✏️ Edit Laptop Details</h2>
     <form id="editForm" enctype="multipart/form-data">
-      <input type="text" id="name" name="name" placeholder="Product Name" required />
-      <textarea id="description" name="description" placeholder="Description" required></textarea>
-      <input type="number" id="price" name="price" placeholder="Price (Ksh)" required />
-      <input type="number" id="quantity" name="quantity" placeholder="Quantity" required />
+      <label style="font-size:12px; font-weight:700; color:#475569;">Laptop Name</label>
+      <input type="text" id="name" name="name" placeholder="Laptop Model Name" required />
+
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin: 6px 0;">
+        <div>
+          <label style="font-size:12px; font-weight:700; color:#475569;">Brand</label>
+          <select id="brand" name="brand" required style="width:100%; padding:10px; border-radius:5px; border:1px solid #ccc; font-size:14px;">
+            <option value="Apple">Apple</option>
+            <option value="Dell">Dell</option>
+            <option value="ASUS">ASUS</option>
+            <option value="Lenovo">Lenovo</option>
+            <option value="HP">HP</option>
+            <option value="Acer">Acer</option>
+            <option value="MSI">MSI</option>
+            <option value="Razer">Razer</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-size:12px; font-weight:700; color:#475569;">Category</label>
+          <select id="category" name="category" required style="width:100%; padding:10px; border-radius:5px; border:1px solid #ccc; font-size:14px;">
+            <option value="Ultrabook">Ultrabook / Thin & Light</option>
+            <option value="Gaming">Gaming Laptop</option>
+            <option value="Business">Business</option>
+            <option value="Student">Student / Everyday</option>
+            <option value="Workstation">Workstation</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin: 6px 0;">
+        <div>
+          <label style="font-size:12px; font-weight:700; color:#475569;">Processor (CPU)</label>
+          <input type="text" id="processor" name="processor" placeholder="e.g. M3 Max, Core i9" required />
+        </div>
+        <div>
+          <label style="font-size:12px; font-weight:700; color:#475569;">Graphics (GPU)</label>
+          <input type="text" id="gpu" name="gpu" placeholder="e.g. RTX 4080" />
+        </div>
+      </div>
+
+      <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px; margin: 6px 0;">
+        <div>
+          <label style="font-size:12px; font-weight:700; color:#475569;">RAM</label>
+          <input type="text" id="ram" name="ram" placeholder="e.g. 32GB DDR5" required />
+        </div>
+        <div>
+          <label style="font-size:12px; font-weight:700; color:#475569;">Storage</label>
+          <input type="text" id="storage" name="storage" placeholder="e.g. 1TB SSD" required />
+        </div>
+        <div>
+          <label style="font-size:12px; font-weight:700; color:#475569;">Screen Size</label>
+          <input type="text" id="screen_size" name="screen_size" placeholder="e.g. 16\" OLED" required />
+        </div>
+      </div>
+
+      <label style="font-size:12px; font-weight:700; color:#475569;">Description & Specs</label>
+      <textarea id="description" name="description" placeholder="Description" required rows="3"></textarea>
+
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin: 6px 0;">
+        <div>
+          <label style="font-size:12px; font-weight:700; color:#475569;">Price ($ USD)</label>
+          <input type="number" step="0.01" id="price" name="price" placeholder="Price" required />
+        </div>
+        <div>
+          <label style="font-size:12px; font-weight:700; color:#475569;">Stock Quantity</label>
+          <input type="number" id="quantity" name="quantity" placeholder="Quantity" required />
+        </div>
+      </div>
 
       <div class="preview" id="imagePreview" style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center;">
       </div>
 
+      <label style="font-size:12px; font-weight:700; color:#475569;">Replace Photos (Optional, up to 5)</label>
       <input type="file" id="image" name="images" accept="image/*" multiple />
-      <button type="submit">Update Product</button>
+      <button type="submit" style="background:#0f172a; color:#fff; font-weight:700; padding:12px; margin-top:14px; border-radius:6px; cursor:pointer;">💾 Save Laptop Changes</button>
     </form>
 
     <div class="actions">
@@ -175,10 +241,17 @@
       }
 
       const p = await res.json();
-      document.getElementById("name").value = p.name;
-      document.getElementById("description").value = p.description;
-      document.getElementById("price").value = p.price;
-      document.getElementById("quantity").value = p.quantity;
+      document.getElementById("name").value = p.name || "";
+      document.getElementById("description").value = p.description || "";
+      document.getElementById("price").value = p.price || "";
+      document.getElementById("quantity").value = p.quantity || "";
+      if (p.brand) document.getElementById("brand").value = p.brand;
+      if (p.category) document.getElementById("category").value = p.category;
+      document.getElementById("processor").value = p.processor || "";
+      document.getElementById("ram").value = p.ram || "";
+      document.getElementById("storage").value = p.storage || "";
+      document.getElementById("gpu").value = p.gpu || "";
+      document.getElementById("screen_size").value = p.screen_size || "";
 
       const previewDiv = document.getElementById("imagePreview");
       previewDiv.innerHTML = "";
@@ -209,10 +282,10 @@
       });
 
       if (res.ok) {
-        alert("✅ Product updated successfully!");
+        alert("✅ Laptop updated successfully!");
         window.location.href = "upload.html"; // Return to admin dashboard
       } else {
-        alert("❌ Failed to update product.");
+        alert("❌ Failed to update laptop.");
       }
     });
 

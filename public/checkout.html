@@ -185,22 +185,27 @@
 
       cartItems.forEach(item => {
         const qty = item.quantity ?? 1;
-        const price = item.price ?? 0;
+        const price = Number(item.price ?? 0);
         const subtotal = qty * price;
         total += subtotal;
 
         if (item.product_quantity != null && item.product_quantity < qty) outOfStock = true;
 
+        const specs = [item.processor, item.ram, item.storage].filter(Boolean).join(' • ');
+
         html += `<tr>
-          <td>${item.name || item.product_name}</td>
-          <td>Ksh ${price}</td>
+          <td>
+            <strong>${item.name || item.product_name}</strong>
+            ${specs ? `<div style="font-size:12px; color:#64748b; margin-top:3px;">⚙️ ${specs}</div>` : ''}
+          </td>
+          <td>$${price.toLocaleString('en-US', { minimumFractionDigits: 2 })}</td>
           <td>${qty}</td>
-          <td>Ksh ${subtotal}</td>
+          <td>$${subtotal.toLocaleString('en-US', { minimumFractionDigits: 2 })}</td>
           <td><button class="btn" onclick="removeItem(${item.id})">Remove</button></td>
         </tr>`;
       });
 
-      html += `<tr><td colspan="3" class="total">Total</td><td colspan="2" class="total">Ksh ${total}</td></tr></table>`;
+      html += `<tr><td colspan="3" class="total">Total</td><td colspan="2" class="total">$${total.toLocaleString('en-US', { minimumFractionDigits: 2 })}</td></tr></table>`;
 
       if (outOfStock) {
         html += '<p style="color:red; font-weight:bold;">Some items are out of stock. Please update your cart before checkout.</p>';

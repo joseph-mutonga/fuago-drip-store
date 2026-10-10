@@ -412,9 +412,10 @@
 
 <body>
   <div class="sidebar">
-    <h2>Fuago Drip</h2>
-    <button onclick="show('upload')">📤 Upload Product</button>
-    <button onclick="show('store')">🛒 Manage Products</button>
+    <h2>⚡ Fuago Laptops</h2>
+    <span style="display:block; font-size:12px; color:#cbd5e1; margin-top:-8px; margin-bottom:14px;">Admin Portal</span>
+    <button onclick="show('upload')">📤 Upload Laptop</button>
+    <button onclick="show('store')">💻 Manage Laptops</button>
     <button onclick="show('users')">👥 Manage Users</button>
     <button onclick="show('orders')">📝 Manage Orders</button>
     <button onclick="show('reports')">📊 Reports & Analytics</button>
@@ -424,21 +425,60 @@
   <div class="main">
     <!-- Upload Product Section -->
     <div id="uploadSection" class="section">
-      <h1>Upload New Product</h1>
+      <h1>Upload New Laptop</h1>
       <div id="uploadMsg"></div>
       <form id="uploadForm" enctype="multipart/form-data">
-        <input name="name" placeholder="Product Name" required>
-        <textarea name="description" placeholder="Description" required></textarea>
-        <input type="number" name="price" placeholder="Price (Ksh)" required>
-        <input type="number" name="quantity" placeholder="Quantity" required>
+        <input name="name" placeholder="Laptop Model Name (e.g. Apple MacBook Pro 16 M3 Max)" required>
+        
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:12px;">
+          <select name="brand" required style="width:100%; padding:10px; border-radius:6px; border:1px solid #ccc; font-size:14px;">
+            <option value="">Select Brand</option>
+            <option value="Apple">Apple</option>
+            <option value="Dell">Dell</option>
+            <option value="ASUS">ASUS</option>
+            <option value="Lenovo">Lenovo</option>
+            <option value="HP">HP</option>
+            <option value="Acer">Acer</option>
+            <option value="MSI">MSI</option>
+            <option value="Razer">Razer</option>
+            <option value="Other">Other</option>
+          </select>
+          <select name="category" required style="width:100%; padding:10px; border-radius:6px; border:1px solid #ccc; font-size:14px;">
+            <option value="Ultrabook">Ultrabook / Thin & Light</option>
+            <option value="Gaming">Gaming Laptop</option>
+            <option value="Business">Business / Executive</option>
+            <option value="Student">Student / Everyday</option>
+            <option value="Workstation">Mobile Workstation</option>
+          </select>
+        </div>
+
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:12px;">
+          <input name="processor" placeholder="Processor / CPU (e.g. Intel Core i9-14900HX)" required>
+          <input name="gpu" placeholder="Graphics / GPU (e.g. NVIDIA RTX 4080 12GB)" required>
+        </div>
+
+        <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:12px; margin-bottom:12px;">
+          <input name="ram" placeholder="RAM (e.g. 32GB DDR5)" required>
+          <input name="storage" placeholder="Storage (e.g. 1TB NVMe SSD)" required>
+          <input name="screen_size" placeholder="Display (e.g. 16.0\" 240Hz OLED)" required>
+        </div>
+
+        <textarea name="description" placeholder="Technical Description, Features, Battery, Ports, etc." required style="width:100%; height:90px;"></textarea>
+
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:12px;">
+          <input type="number" step="0.01" name="price" placeholder="Price ($ USD)" required>
+          <input type="number" name="quantity" placeholder="Stock Quantity Available" required>
+        </div>
+
+        <label style="display:block; font-size:13px; font-weight:600; color:#475569; margin-bottom:4px;">Upload Laptop Photos (Up to 5 images):</label>
         <input type="file" name="images" accept="image/*" multiple required>
-        <button type="submit">Upload Product</button>
+        <button type="submit" style="background:#0f172a; color:white; padding:12px; font-weight:700; border-radius:8px; cursor:pointer;">🚀 Upload Laptop to Catalog</button>
       </form>
     </div>
 
     <!-- Manage Products Section -->
     <div id="storeSection" class="section" style="display:none;">
-      <h1>My Online Store</h1>
+      <h1>Laptop Catalog Management</h1>
       <div id="storeMsg"></div>
       <div id="productList" class="product-grid"></div>
     </div>
@@ -585,15 +625,28 @@
         products.forEach(p => {
           const card = document.createElement('div');
           card.className = 'product-card';
+          card.style.textAlign = 'left';
+          card.style.position = 'relative';
           card.innerHTML = `
-        <img src="${p.image}" alt="${escapeHtml(p.name)}">
-        <h3>${escapeHtml(p.name)}</h3>
-        <p>${escapeHtml(p.description)}</p>
-        <p><strong>Ksh ${p.price}</strong></p>
-        <div class="product-actions">
-          <button class="btn edit-btn" onclick="editProduct(${p.id})">Edit</button>
-          <button class="btn delete-btn" onclick="deleteProduct(${p.id}, this)">Delete</button>
-        </div>`;
+            <div style="position:relative; height:160px; overflow:hidden; border-radius:6px; background:#f1f5f9; margin-bottom:8px;">
+              <img src="${p.image || '/uploads/macbook-pro-16.jpg'}" alt="${escapeHtml(p.name)}" style="width:100%; height:100%; object-fit:cover;">
+              <span style="position:absolute; top:6px; left:6px; background:rgba(15,23,42,0.85); color:#fff; font-size:10px; font-weight:800; padding:3px 6px; border-radius:4px; text-transform:uppercase;">${escapeHtml(p.brand || 'TECH')}</span>
+              <span style="position:absolute; top:6px; right:6px; background:rgba(245,158,11,0.9); color:#0f172a; font-size:10px; font-weight:800; padding:3px 6px; border-radius:4px;">${escapeHtml(p.category || 'Laptop')}</span>
+            </div>
+            <h3 style="margin:4px 0 6px; font-size:15px; font-weight:700; height:38px; overflow:hidden;">${escapeHtml(p.name)}</h3>
+            <div style="font-size:11px; color:#475569; margin-bottom:6px; display:flex; flex-wrap:wrap; gap:4px;">
+              ${p.processor ? `<span style="background:#e2e8f0; padding:2px 6px; border-radius:4px;">⚙️ ${escapeHtml(p.processor.split('(')[0])}</span>` : ''}
+              ${p.ram ? `<span style="background:#e2e8f0; padding:2px 6px; border-radius:4px;">💾 ${escapeHtml(p.ram)}</span>` : ''}
+              ${p.storage ? `<span style="background:#e2e8f0; padding:2px 6px; border-radius:4px;">💽 ${escapeHtml(p.storage)}</span>` : ''}
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:baseline; margin:8px 0;">
+              <strong style="font-size:16px; color:#0f172a;">$${Number(p.price).toLocaleString('en-US', { minimumFractionDigits: 2 })}</strong>
+              <span style="font-size:12px; font-weight:600; color:${p.quantity > 5 ? '#16a34a' : '#d97706'};">Stock: ${p.quantity}</span>
+            </div>
+            <div class="product-actions" style="margin-top:auto;">
+              <button class="btn edit-btn" style="flex:1;" onclick="editProduct(${p.id})">Edit</button>
+              <button class="btn delete-btn" style="flex:1;" onclick="deleteProduct(${p.id}, this)">Delete</button>
+            </div>`;
           list.appendChild(card);
         });
       } catch (err) {

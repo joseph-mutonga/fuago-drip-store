@@ -38,14 +38,30 @@ app.use("/admin", adminRoutes);
 app.use("/admin/reports", require("./routes/reportRoutes"));
 
 
-// -------------------- UPLOAD PRODUCT --------------------
+// -------------------- UPLOAD PRODUCT (LAPTOP) --------------------
 app.post("/upload", upload.array("images", 5), (req, res) => {
-  const { name, description, price, quantity } = req.body;
+  const { name, description, price, quantity, brand, category, processor, ram, storage, gpu, screen_size } = req.body;
   // Fallback to storing the first image in the legacy 'image' column for backward compatibility
   const primaryImage = req.files && req.files.length > 0 ? `/uploads/${req.files[0].filename}` : "";
 
-  const sql = "INSERT INTO products (name, description, price, quantity, image) VALUES (?, ?, ?, ?, ?)";
-  db.query(sql, [name, description, price, quantity, primaryImage], (err, result) => {
+  const sql = `
+    INSERT INTO products (name, description, price, quantity, image, brand, category, processor, ram, storage, gpu, screen_size)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `;
+  db.query(sql, [
+    name,
+    description,
+    price,
+    quantity,
+    primaryImage,
+    brand || null,
+    category || 'Ultrabook',
+    processor || null,
+    ram || null,
+    storage || null,
+    gpu || null,
+    screen_size || null
+  ], (err, result) => {
     if (err) return res.status(500).send(err);
 
     const productId = result.insertId;
@@ -63,17 +79,84 @@ app.post("/upload", upload.array("images", 5), (req, res) => {
   });
 });
 
-// -------------------- GET ALL PRODUCTS --------------------
+// -------------------- GET ALL PRODUCTS WITH FILTERING --------------------
 app.get("/products", (req, res) => {
+  const { brand, category, ram, storage, minPrice, maxPrice, search, sort } = req.query;
+  const whereClauses = [];
+  const params = [];
+
+  if (brand && brand !== 'all') {
+    const brands = brand.split(",").map(b => b.trim()).filter(Boolean);
+    if (brands.length > 0) {
+      whereClauses.push(`p.brand IN (${brands.map(() => "?").join(",")})`);
+      params.push(...brands);
+    }
+  }
+
+  if (category && category !== 'all' && category !== 'All') {
+    const cats = category.split(",").map(c => c.trim()).filter(Boolean);
+    if (cats.length > 0) {
+      whereClauses.push(`p.category IN (${cats.map(() => "?").join(",")})`);
+      params.push(...cats);
+    }
+  }
+
+  if (ram && ram !== 'all') {
+    const rams = ram.split(",").map(r => r.trim()).filter(Boolean);
+    if (rams.length > 0) {
+      const ramConditions = rams.map(() => "p.ram LIKE ?").join(" OR ");
+      whereClauses.push(`(${ramConditions})`);
+      params.push(...rams.map(r => `%${r}%`));
+    }
+  }
+
+  if (storage && storage !== 'all') {
+    const storages = storage.split(",").map(s => s.trim()).filter(Boolean);
+    if (storages.length > 0) {
+      const storageConditions = storages.map(() => "p.storage LIKE ?").join(" OR ");
+      whereClauses.push(`(${storageConditions})`);
+      params.push(...storages.map(s => `%${s}%`));
+    }
+  }
+
+  if (minPrice && !isNaN(minPrice)) {
+    whereClauses.push("p.price >= ?");
+    params.push(parseFloat(minPrice));
+  }
+
+  if (maxPrice && !isNaN(maxPrice)) {
+    whereClauses.push("p.price <= ?");
+    params.push(parseFloat(maxPrice));
+  }
+
+  if (search && search.trim()) {
+    whereClauses.push("(p.name LIKE ? OR p.brand LIKE ? OR p.processor LIKE ? OR p.description LIKE ? OR p.category LIKE ?)");
+    const s = `%${search.trim()}%`;
+    params.push(s, s, s, s, s);
+  }
+
+  const whereSql = whereClauses.length > 0 ? `WHERE ${whereClauses.join(" AND ")}` : "";
+
+  let orderSql = "ORDER BY p.id DESC";
+  if (sort === "price_asc") orderSql = "ORDER BY p.price ASC";
+  else if (sort === "price_desc") orderSql = "ORDER BY p.price DESC";
+  else if (sort === "name_asc") orderSql = "ORDER BY p.name ASC";
+  else if (sort === "newest") orderSql = "ORDER BY p.id DESC";
+
   const query = `
     SELECT p.*, GROUP_CONCAT(pi.image_path) as all_images
     FROM products p
     LEFT JOIN product_images pi ON p.id = pi.product_id
+    ${whereSql}
     GROUP BY p.id
-    ORDER BY p.id DESC
+    ${orderSql}
   `;
-  db.query(query, (err, results) => {
-    if (err) return res.status(500).send(err);
+
+  db.query(query, params, (err, results) => {
+    if (err) {
+      console.error("Error fetching products:", err);
+      return res.status(500).send(err);
+    }
     // Convert comma-separated images string to array
     const products = results.map(p => ({
       ...p,
@@ -136,15 +219,10 @@ app.get("/product/:id", (req, res) => {
   });
 });
 
-// -------------------- UPDATE PRODUCT --------------------
+// -------------------- UPDATE PRODUCT (LAPTOP) --------------------
 app.post("/update/:id", upload.array("images", 5), (req, res) => {
   const id = req.params.id;
-  const { name, description, price, quantity } = req.body;
-
-  // Simple update without replacing images logic for now, or just append
-  // For simplicity: Update details, and if new images are uploaded, add them.
-  // A full "replace images" logic is complex for this scope, so we'll just Append or Replace?
-  // Let's go with: Update details always. If new images, delete old and add new (Replace).
+  const { name, description, price, quantity, brand, category, processor, ram, storage, gpu, screen_size } = req.body;
 
   if (req.files && req.files.length > 0) {
     // 1. Get old images to delete
@@ -164,8 +242,11 @@ app.post("/update/:id", upload.array("images", 5), (req, res) => {
 
         // 4. Update product details and legacy image column
         const primaryImage = `/uploads/${req.files[0].filename}`;
-        db.query("UPDATE products SET name=?, description=?, price=?, quantity=?, image=? WHERE id=?",
-          [name, description, price, quantity, primaryImage, id],
+        db.query(
+          `UPDATE products 
+           SET name=?, description=?, price=?, quantity=?, image=?, brand=?, category=?, processor=?, ram=?, storage=?, gpu=?, screen_size=? 
+           WHERE id=?`,
+          [name, description, price, quantity, primaryImage, brand || null, category || 'Ultrabook', processor || null, ram || null, storage || null, gpu || null, screen_size || null, id],
           (err) => {
             if (err) return res.status(500).send(err);
             res.redirect("/upload.html");
@@ -175,8 +256,11 @@ app.post("/update/:id", upload.array("images", 5), (req, res) => {
     });
   } else {
     // Just update details
-    db.query("UPDATE products SET name=?, description=?, price=?, quantity=? WHERE id=?",
-      [name, description, price, quantity, id],
+    db.query(
+      `UPDATE products 
+       SET name=?, description=?, price=?, quantity=?, brand=?, category=?, processor=?, ram=?, storage=?, gpu=?, screen_size=? 
+       WHERE id=?`,
+      [name, description, price, quantity, brand || null, category || 'Ultrabook', processor || null, ram || null, storage || null, gpu || null, screen_size || null, id],
       (err) => {
         if (err) return res.status(500).send(err);
         res.redirect("/upload.html");
